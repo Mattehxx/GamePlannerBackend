@@ -82,7 +82,7 @@ namespace Controllers.AuthenticateController
                 Surname = model.Surname,
                 BirthDate = model.BirthDate,
                 CanBeMaster = model.CanBeMaster,
-                KnewledgeId = model.KnowledgesId,
+                KnowledgeId = model.KnowledgesId,
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
@@ -106,7 +106,7 @@ namespace Controllers.AuthenticateController
                 Surname = model.Surname,
                 BirthDate = model.BirthDate,
                 CanBeMaster = model.CanBeMaster,
-                KnewledgeId = model.KnowledgesId,
+                KnowledgeId = model.KnowledgesId,
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
