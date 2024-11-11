@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamePlanner", "GamePlanner\GamePlanner.csproj", "{EAE7D3DF-DCC1-4BB9-85D3-9A4724FDA1F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamePlanner.DAL", "GamePlanner.DAL\GamePlanner.DAL.csproj", "{5F4E95AB-3D9A-4ED1-BF6F-A526230FDB49}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EAE7D3DF-DCC1-4BB9-85D3-9A4724FDA1F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAE7D3DF-DCC1-4BB9-85D3-9A4724FDA1F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAE7D3DF-DCC1-4BB9-85D3-9A4724FDA1F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAE7D3DF-DCC1-4BB9-85D3-9A4724FDA1F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F4E95AB-3D9A-4ED1-BF6F-A526230FDB49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F4E95AB-3D9A-4ED1-BF6F-A526230FDB49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F4E95AB-3D9A-4ED1-BF6F-A526230FDB49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F4E95AB-3D9A-4ED1-BF6F-A526230FDB49}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {49273CAF-AC04-450A-A890-9C1FFDDC2A88}
+	EndGlobalSection
+EndGlobal
