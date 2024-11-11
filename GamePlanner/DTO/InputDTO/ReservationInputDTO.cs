@@ -19,6 +19,7 @@ namespace GamePlanner.DTO.InputDTO
         public required bool IsDelete { get; set; } = false;
         public string? UserId { get; set; }
         public required int GameSessionId { get; set; }
+        public bool IsQueued { get; set; }
         public GameSessionInputDTO? GameSession { get; set; }
     }
 }

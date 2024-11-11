@@ -19,6 +19,7 @@ namespace GamePlanner.DAL.Data.Db
         public required bool IsDelete { get; set; } = false;
         public string? UserId { get; set; }
         public required int GameSessionId { get; set; }
+        public bool IsQueued { get; set; }
         public ApplicationUser? User { get; set; }
         public GameSession? GameSession { get; set; }
     }

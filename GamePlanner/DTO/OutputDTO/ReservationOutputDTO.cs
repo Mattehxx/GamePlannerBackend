@@ -14,6 +14,7 @@ namespace GamePlanner.DTO.OutputDTO
         public bool IsDelete { get; set; } = false;
         public string? UserId { get; set; }
         public int GameSessionId { get; set; }
+        public bool IsQueued { get; set; }
         public GameSessionOutputDTO? GameSession { get; set; }
     }
 }
