@@ -1,19 +1,16 @@
 using GamePlanner.DAL.Data;
 using GamePlanner.DAL.Data.Auth;
+using GamePlanner.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
-using GamePlanner.Services;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddDbContext<GamePlannerDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -73,7 +70,7 @@ builder.Services.AddSwaggerGen(option =>
         }
     );
 });
-//Custom services
+
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 var app = builder.Build();
