@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Controllers.AuthenticateController
 {
-    [Route("/")]
+    [Route("/api")]
     [ApiController]
     public class AuthenticateController : ControllerBase
     {
@@ -28,8 +28,7 @@ namespace Controllers.AuthenticateController
             _configuration = configuration;
         }
 
-        [HttpPost]
-        [Route("login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -68,8 +67,7 @@ namespace Controllers.AuthenticateController
             return Unauthorized();
         }
 
-        [HttpPost]
-        [Route("register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             var userExists = await _userManager.FindByEmailAsync(model.Email);
@@ -93,8 +91,7 @@ namespace Controllers.AuthenticateController
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
 
-        [HttpPost]
-        [Route("register-admin")]
+        [HttpPost("register-admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
         {
             var userExists = await _userManager.FindByEmailAsync(model.Email);
@@ -136,8 +133,7 @@ namespace Controllers.AuthenticateController
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
 
-        [HttpPost]
-        [Route("refresh-token")]
+        [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
         {
             if (tokenModel is null)
@@ -177,8 +173,7 @@ namespace Controllers.AuthenticateController
         }
 
         [Authorize]
-        [HttpPost]
-        [Route("revoke/{username}")]
+        [HttpPost("revoke/{username}")]
         public async Task<IActionResult> Revoke(string username)
         {
             var user = await _userManager.FindByNameAsync(username);
@@ -191,8 +186,7 @@ namespace Controllers.AuthenticateController
         }
 
         [Authorize]
-        [HttpPost]
-        [Route("revoke-all")]
+        [HttpPost("revoke-all")]
         public async Task<IActionResult> RevokeAll()
         {
             var users = _userManager.Users.ToList();

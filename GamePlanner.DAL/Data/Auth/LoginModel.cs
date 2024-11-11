@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace GamePlanner.DAL.Data.Auth
+﻿namespace GamePlanner.DAL.Data.Auth
 {
     public class LoginModel
     {
