@@ -7,7 +7,7 @@ namespace GamePlanner.DAL.Data.Db
         public required int GameSessionId { get; set; }
         public required DateTime GameSessionDate { get; set; }
         public required DateTime GameSessionEndTime { get; set; }
-        public required bool IsDelete { get; set; } = false;
+        public required bool IsDeleted { get; set; } = false;
         public required int TableId { get; set; }
         public required int EventId { get; set; }
         public required string MasterId { get; set; }
