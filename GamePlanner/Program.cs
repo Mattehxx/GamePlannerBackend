@@ -1,6 +1,7 @@
 using GamePlanner.DAL.Data;
 using GamePlanner.DAL.Data.Auth;
 using GamePlanner.Services;
+using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -71,7 +72,8 @@ builder.Services.AddSwaggerGen(option =>
     );
 });
 
-builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddSingleton<IBlobService, BlobService>();
 
 var app = builder.Build();
 

@@ -1,17 +1,17 @@
-﻿
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using System.Net;
+using GamePlanner.Services.IServices;
 
 namespace GamePlanner.Services
 {
-    public class EmailSender : IEmailSender
+    public class EmailService : IEmailService
     {
         private readonly string _smptServer;
         private readonly int _smptPort;
         private readonly string _emailAddress;
         private readonly string _password;
 
-        public EmailSender(IConfiguration configuration)
+        public EmailService(IConfiguration configuration)
         {
             var emailSettings = configuration.GetSection("EmailSettings");
             _smptServer = emailSettings.GetValue<string>("Server") ?? throw new InvalidOperationException("Missing Server setting");
