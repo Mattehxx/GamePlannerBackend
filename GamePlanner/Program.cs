@@ -29,7 +29,6 @@ var modelbuilder = new ODataConventionModelBuilder();
 modelbuilder.EntitySet<Event>("Events");
 modelbuilder.EntitySet<Game>("Games");
 modelbuilder.EntitySet<GameSession>("GameSessions");
-modelbuilder.EntitySet<Knowledge>("Knowledges");
 modelbuilder.EntitySet<Recurrence>("Recurrences");
 modelbuilder.EntitySet<Reservation>("Reservations");
 modelbuilder.EntitySet<Table>("Tables");

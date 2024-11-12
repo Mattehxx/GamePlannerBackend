@@ -7,7 +7,7 @@ namespace GamePlanner.DTO.OutputDTO
         public string Id { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
-        public string BirthDate { get; set; }
+        public DateTime BirthDate { get; set; }
         public string? Email { get; set; }
         public string? ImgUrl { get; set; }
         public bool CanBeMaster { get; set; }

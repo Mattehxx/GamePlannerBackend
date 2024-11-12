@@ -148,7 +148,6 @@ namespace GamePlanner.DTO
         public ApplicationUserOutputDTO ToModel(ApplicationUser entity) => new ApplicationUserOutputDTO
         {
             Id = entity.Id,
-            KnowledgeId = entity.KnowledgeId,
             ImgUrl = entity.ImgUrl,
             Name = entity.Name,
             Surname = entity.Surname,
