@@ -46,11 +46,6 @@ namespace GamePlanner.DTO
             GameSessionDate = model.GameSessionDate,
             GameSessionEndTime = model.GameSessionEndTime,
         };
-        public Knowledge ToEntity(KnowledgeInputDTO model) => new Knowledge
-        {
-            KnowledgeId = 0,
-            Name = model.Name,
-        };
         public Recurrence ToEntity(RecurrenceInputDTO model) => new Recurrence
         {
             RecurrenceId = 0,
@@ -122,11 +117,6 @@ namespace GamePlanner.DTO
             GameSessionDate = entity.GameSessionDate,
             GameSessionEndTime = entity.GameSessionEndTime,
         };
-        public KnowledgeOutputDTO ToModel(Knowledge entity) => new KnowledgeOutputDTO
-        {
-            KnowledgeId = 0,
-            Name = entity.Name,
-        };
         public RecurrenceOutputDTO ToModel(Recurrence entity) => new RecurrenceOutputDTO
         {
             RecurrenceId = 0,
@@ -165,7 +155,7 @@ namespace GamePlanner.DTO
             BirthDate = entity.BirthDate,
             CanBeMaster = entity.CanBeMaster,
             Email = entity.Email,
-            Knowledge = entity.Knowledge != null ? ToModel(entity.Knowledge) : null,
+            Level = entity.Level
         };
         #endregion
 

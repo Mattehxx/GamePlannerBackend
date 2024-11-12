@@ -12,7 +12,7 @@ namespace GamePlanner.DTO.OutputDTO
         public string? ImgUrl { get; set; }
         public bool CanBeMaster { get; set; }
         public int KnowledgeId { get; set; }
-        public KnowledgeOutputDTO? Knowledge { get; set; }
+        public int Level { get; set; }
         //public List<GameSession>? MasterGameSessions { get; set; }
         //public List<Reservation>? Reservations { get; set; }
         //public List<Event>? AdminEvents { get; set; }
