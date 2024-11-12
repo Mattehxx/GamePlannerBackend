@@ -10,7 +10,7 @@ namespace GamePlanner.DAL.Data.Db
         public required bool IsDelete { get; set; } = false;
         public required int TableId { get; set; }
         public required int EventId { get; set; }
-        public required int MasterId { get; set; }
+        public required string MasterId { get; set; }
         public Table? Table { get; set; }
         public Event? Event { get; set; }
         public ApplicationUser? Master { get; set; }

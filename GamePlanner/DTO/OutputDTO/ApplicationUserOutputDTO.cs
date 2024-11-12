@@ -4,10 +4,11 @@ namespace GamePlanner.DTO.OutputDTO
 {
     public class ApplicationUserOutputDTO
     {
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public string BirthDate { get; set; }
-        public string Email { get; set; }
+        public string? Email { get; set; }
         public string? ImgUrl { get; set; }
         public bool CanBeMaster { get; set; }
         public int KnowledgeId { get; set; }
