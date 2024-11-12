@@ -1,11 +1,11 @@
 ﻿using GamePlanner.DAL.Data.Auth;
+using GamePlanner.DAL.Data.Db;
 using System.ComponentModel.DataAnnotations;
 
-namespace GamePlanner.DAL.Data.Db
+namespace GamePlanner.DTO.InputDTO
 {
-    public class Reservation
+    public class ReservationInputDTO
     {
-        public required int ReservationId { get; set; }
         [MaxLength(50)]
         public required string Name { get; set; }
         [MaxLength(50)]
@@ -20,7 +20,6 @@ namespace GamePlanner.DAL.Data.Db
         public string? UserId { get; set; }
         public required int GameSessionId { get; set; }
         public bool IsQueued { get; set; }
-        public ApplicationUser? User { get; set; }
-        public GameSession? GameSession { get; set; }
+        public GameSessionInputDTO? GameSession { get; set; }
     }
 }
