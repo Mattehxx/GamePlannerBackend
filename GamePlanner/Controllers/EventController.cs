@@ -2,6 +2,8 @@
 using GamePlanner.DAL.Data;
 using GamePlanner.DAL.Data.Db;
 using GamePlanner.DAL.Managers;
+using GamePlanner.DTO;
+using GamePlanner.DTO.InputDTO;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -13,22 +15,23 @@ namespace GamePlanner.Controllers
     [ApiController]
     public class EventController : ODataController
     {
-        private readonly GamePlannerDbContext _context;
         private readonly UnitOfWork _unitOfWork;
-        public EventController(GamePlannerDbContext context,UnitOfWork unitOfWork)
+        private readonly Mapper _mapper;
+        public EventController(UnitOfWork unitOfWork, Mapper mapper)
         {
-            _context = context;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         [HttpPost("events")]
-        public async Task<IActionResult> Create(Event entity)
+        public async Task<IActionResult> Create(EventInputDTO model)
         {
             try
             {
-              if (entity == null) return BadRequest("No event found");
+              if (model == null) return BadRequest("No event found");
+              Event entity = _mapper.ToEntity(model);
               await _unitOfWork.EventManager.CreateAsync(entity);
-              return (await _unitOfWork.Commit()).Value ? Ok(entity) : BadRequest("Event impossible to create");
+              return (await _unitOfWork.Commit()).Value ? Ok(_mapper.ToModel(entity)) : BadRequest("Event impossible to create");
             }catch (Exception ex) 
             {
               return BadRequest(ex.Message);

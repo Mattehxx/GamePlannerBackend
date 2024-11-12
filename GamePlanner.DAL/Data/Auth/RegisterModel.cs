@@ -13,6 +13,5 @@ namespace GamePlanner.DAL.Data.Auth
         public string? ImgUrl { get; set; }
         public required string Password { get; set; }
         public required bool CanBeMaster { get; set; }
-        public int KnowledgesId { get; set; }
     }
 }

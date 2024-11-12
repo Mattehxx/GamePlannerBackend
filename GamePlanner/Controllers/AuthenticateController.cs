@@ -82,6 +82,7 @@ namespace Controllers.AuthenticateController
                 BirthDate = model.BirthDate,
                 CanBeMaster = model.CanBeMaster,
                 Level = 0,
+                UserName = model.Email
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
@@ -106,6 +107,7 @@ namespace Controllers.AuthenticateController
                 BirthDate = model.BirthDate,
                 CanBeMaster = model.CanBeMaster,
                 Level = 0,
+                UserName= model.Email
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)

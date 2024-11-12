@@ -7,6 +7,7 @@ namespace GamePlanner.DAL.Data.Db
         public required int RecurrenceId { get; set; }
         [MaxLength(50)]
         public required string Name { get; set; }
+        public required int Day { get; set; }
         public List<Event>? Events { get; set; }
     }
 }

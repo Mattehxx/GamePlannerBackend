@@ -17,7 +17,6 @@ namespace GamePlanner.DTO.InputDTO
         public required string AdminId { get; set; }
         public required int GameId { get; set; }
         public required int RecurrenceId { get; set; }
-        //public ApplicationUser? User { get; set; }
         public RecurrenceInputDTO? Recurrence { get; set; }
         public GameInputDTO? Game { get; set; }
         public List<GameSessionInputDTO>? GameSessions { get; set; }

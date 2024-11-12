@@ -43,13 +43,14 @@ namespace GamePlanner.DTO
             MasterId = model.MasterId,
             TableId = model.TableId,
             IsDelete = model.IsDelete,
-            GameSessionDate = model.GameSessionDate,
-            GameSessionEndTime = model.GameSessionEndTime,
+            GameSessionStartDate = model.GameSessionDate,
+            GameSessionEndDate = model.GameSessionEndTime,
         };
         public Recurrence ToEntity(RecurrenceInputDTO model) => new Recurrence
         {
             RecurrenceId = 0,
             Name = model.Name,
+            Day = model.Day,
             Events = model.Events?.ConvertAll(ToEntity),
         };
         public Reservation ToEntity(ReservationInputDTO model) => new Reservation
@@ -114,8 +115,8 @@ namespace GamePlanner.DTO
             MasterId = entity.MasterId,
             TableId = entity.TableId,
             IsDelete = entity.IsDelete,
-            GameSessionDate = entity.GameSessionDate,
-            GameSessionEndTime = entity.GameSessionEndTime,
+            GameSessionDate = entity.GameSessionStartDate,
+            GameSessionEndTime = entity.GameSessionEndDate,
         };
         public RecurrenceOutputDTO ToModel(Recurrence entity) => new RecurrenceOutputDTO
         {
@@ -175,8 +176,8 @@ namespace GamePlanner.DTO
             MasterId = entity.MasterId,
             TableId = entity.TableId,
             IsDelete = entity.IsDelete,
-            GameSessionDate = entity.GameSessionDate,
-            GameSessionEndTime = entity.GameSessionEndTime,
+            GameSessionDate = entity.GameSessionStartDate,
+            GameSessionEndTime = entity.GameSessionEndDate,
             Table = entity.Table != null ? ToModel(entity.Table) : null,
             TotalSeats = entity.Table != null ? entity.Table.Seat : 0,
             MasterName = entity.Master != null ? entity.Master.Name : null,
