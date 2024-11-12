@@ -15,7 +15,6 @@ namespace GamePlanner.DAL.Managers
             EventManager = new EventManager(context);
             GameManager = new GameManager(context);
             GameSessionManager = new GameSessionManager(context);
-            KnowledgeManager = new KnowledgeManager(context);
             RecurrenceManager = new RecurrenceManager(context);
             ReservationManager = new ReservationManager(context);
             TableManager = new TableManager(context);
@@ -24,7 +23,6 @@ namespace GamePlanner.DAL.Managers
         public IEventManager EventManager { get; private set; }
         public IGameManager GameManager { get; private set; }
         public IGameSessionManager GameSessionManager { get; private set; }
-        public IKnowledgeManager KnowledgeManager { get; private set; }
         public IRecurrenceManager RecurrenceManager { get; private set; }
         public IReservationManager ReservationManager { get; private set; }
         public ITableManager TableManager { get; private set; }
