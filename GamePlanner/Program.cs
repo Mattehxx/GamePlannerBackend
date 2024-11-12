@@ -1,5 +1,9 @@
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using GamePlanner.DAL.Data;
 using GamePlanner.DAL.Data.Auth;
+using GamePlanner.DTO.ConfigurationDTO;
+using GamePlanner.Helpers;
 using GamePlanner.Services;
 using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,15 +15,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//Custom services
+builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.AddSingleton<IBlobService, BlobService>();
+
 builder.Services.AddControllers();
 builder.Services.AddDbContext<GamePlannerDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(KeyVaultHelper.GetSecrectConnectionString("DbConnection")));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<GamePlannerDbContext>()
     .AddDefaultTokenProviders();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -27,11 +34,14 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
+    var JWTSettings = KeyVaultHelper.GetSecret<JWTSettingsDTO>("JWTSettings");
+    if (JWTSettings is null) throw new ArgumentNullException(nameof(JWTSettings));
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
+        ValidIssuer = JWTSettings.ValidIssuer,
+        ValidAudience = JWTSettings.ValidAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSettings.Secret)),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
@@ -71,9 +81,6 @@ builder.Services.AddSwaggerGen(option =>
         }
     );
 });
-
-builder.Services.AddSingleton<IEmailService, EmailService>();
-builder.Services.AddSingleton<IBlobService, BlobService>();
 
 var app = builder.Build();
 
