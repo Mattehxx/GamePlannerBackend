@@ -1,9 +1,6 @@
-﻿using GamePlanner.DAL.Data.Auth;
-using GamePlanner.DAL.Data.Db;
-
-namespace GamePlanner.DTO.OutputDTO
+﻿namespace GamePlanner.DTO.OutputDTO
 {
-    public class GameSessionOutputDTO
+    public class GameSessionDetailsDTO
     {
         public int GameSessionId { get; set; }
         public DateTime GameSessionDate { get; set; }
@@ -13,8 +10,12 @@ namespace GamePlanner.DTO.OutputDTO
         public int EventId { get; set; }
         public string MasterId { get; set; }
         public TableOutputDTO? Table { get; set; }
-        public EventOutputDTO? Event { get; set; }
-        //public ApplicationUserOutputDTO? Master { get; set; }
-        public List<ReservationOutputDTO>? Reservations { get; set; }
+        //public List<ReservationOutputDTO>? Reservations { get; set; }
+        //dettagli
+        public string? MasterName { get; set; }
+        public int TotalSeats { get; set; }
+        public int AvailableSeats { get; set; }
+        public bool IsReservable { get; set; }
+        public int QueueLength { get; set; }
     }
 }
