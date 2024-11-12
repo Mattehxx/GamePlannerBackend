@@ -1,6 +1,5 @@
 ﻿using GamePlanner.DAL.Data.Db;
 using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
 
 namespace GamePlanner.DAL.Data.Auth
 {
@@ -10,7 +9,7 @@ namespace GamePlanner.DAL.Data.Auth
         public DateTime RefreshTokenExpiryTime { get; set; }
         public required string Name { get; set; }
         public required string Surname { get; set; }
-        public required string BirthDate { get; set; }
+        public required DateTime BirthDate { get; set; }
         public string? ImgUrl { get; set; }
         public required bool CanBeMaster { get; set; }
         public required int KnowledgeId { get; set; }
