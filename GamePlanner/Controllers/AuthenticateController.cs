@@ -1,4 +1,6 @@
 ﻿using GamePlanner.DAL.Data.Auth;
+using GamePlanner.DTO.ConfigurationDTO;
+using GamePlanner.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,16 +18,16 @@ namespace Controllers.AuthenticateController
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IConfiguration _configuration;
+        private readonly JWTSettingsDTO _JWTSettings;
 
         public AuthenticateController(
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration)
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _configuration = configuration;
+            _JWTSettings = KeyVaultHelper.GetSecret<JWTSettingsDTO>("JWTSettings")
+                ?? throw new InvalidOperationException(nameof(_JWTSettings));
         }
 
         [HttpPost("login")]
@@ -49,11 +51,8 @@ namespace Controllers.AuthenticateController
 
                 var token = CreateToken(authClaims);
                 var refreshToken = GenerateRefreshToken();
-
-                _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
-
                 user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
+                user.RefreshTokenExpiryTime = DateTime.Now.AddDays(_JWTSettings.RefreshTokenValidityInDays);
 
                 await _userManager.UpdateAsync(user);
 
@@ -82,7 +81,7 @@ namespace Controllers.AuthenticateController
                 Surname = model.Surname,
                 BirthDate = model.BirthDate,
                 CanBeMaster = model.CanBeMaster,
-                KnowledgeId = model.KnowledgesId,
+                Level = 0,
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
@@ -106,7 +105,7 @@ namespace Controllers.AuthenticateController
                 Surname = model.Surname,
                 BirthDate = model.BirthDate,
                 CanBeMaster = model.CanBeMaster,
-                KnowledgeId = model.KnowledgesId,
+                Level = 0,
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
@@ -200,15 +199,14 @@ namespace Controllers.AuthenticateController
 
         private JwtSecurityToken CreateToken(List<Claim> authClaims)
         {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-            _ = int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out int tokenValidityInMinutes);
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JWTSettings.Secret));
             var token = new JwtSecurityToken(
-                issuer: _configuration["JWT:ValidIssuer"],
-                audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddMinutes(tokenValidityInMinutes),
+                issuer: _JWTSettings.ValidIssuer,
+                audience: _JWTSettings.ValidAudience,
+                expires: DateTime.Now.AddMinutes(_JWTSettings.TokenValidityInMinutes),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                );
+            );
             return token;
         }
 
@@ -227,7 +225,7 @@ namespace Controllers.AuthenticateController
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"])),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JWTSettings.Secret)),
                 ValidateLifetime = false
             };
             var tokenHandler = new JwtSecurityTokenHandler();

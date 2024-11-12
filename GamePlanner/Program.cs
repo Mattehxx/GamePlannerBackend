@@ -1,25 +1,63 @@
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using GamePlanner.DAL.Data;
 using GamePlanner.DAL.Data.Auth;
+using GamePlanner.DTO.ConfigurationDTO;
+using GamePlanner.Helpers;
+using GamePlanner.DAL.Data.Db;
+using GamePlanner.DAL.Managers;
 using GamePlanner.Services;
 using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//Custom services
+builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.AddSingleton<IBlobService, BlobService>();
+
 builder.Services.AddControllers();
+
+var modelbuilder = new ODataConventionModelBuilder();
+modelbuilder.EntitySet<Event>("Events");
+modelbuilder.EntitySet<Game>("Games");
+modelbuilder.EntitySet<GameSession>("GameSessions");
+modelbuilder.EntitySet<Knowledge>("Knowledges");
+modelbuilder.EntitySet<Recurrence>("Recurrences");
+modelbuilder.EntitySet<Reservation>("Reservations");
+modelbuilder.EntitySet<Table>("Tables");
+modelbuilder.EnableLowerCamelCaseForPropertiesAndEnums();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+    })
+    .AddOData(options =>
+    {
+        options
+            .Select()
+            .Filter()
+            .OrderBy()
+            .Expand()
+            .Count()
+            .SetMaxTop(null)
+            .AddRouteComponents("odata", modelbuilder.GetEdmModel());
+    });
+
 builder.Services.AddDbContext<GamePlannerDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(KeyVaultHelper.GetSecrectConnectionString("DbConnection")));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<GamePlannerDbContext>()
     .AddDefaultTokenProviders();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -27,11 +65,14 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
+    var JWTSettings = KeyVaultHelper.GetSecret<JWTSettingsDTO>("JWTSettings");
+    if (JWTSettings is null) throw new ArgumentNullException(nameof(JWTSettings));
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
+        ValidIssuer = JWTSettings.ValidIssuer,
+        ValidAudience = JWTSettings.ValidAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSettings.Secret)),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
@@ -40,7 +81,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 builder.Services.AddEndpointsApiExplorer();
-
 
 builder.Services.AddSwaggerGen(option =>
 {
@@ -71,9 +111,6 @@ builder.Services.AddSwaggerGen(option =>
         }
     );
 });
-
-builder.Services.AddSingleton<IEmailService, EmailService>();
-builder.Services.AddSingleton<IBlobService, BlobService>();
 
 var app = builder.Build();
 

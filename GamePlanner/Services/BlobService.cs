@@ -1,13 +1,15 @@
 ﻿using Azure.Identity;
 using Azure.Storage.Blobs;
+using GamePlanner.DTO.ConfigurationDTO;
+using GamePlanner.Helpers;
 using GamePlanner.Services.IServices;
 using Microsoft.Identity.Client;
 
 namespace GamePlanner.Services
 {
-    public class BlobService(IConfiguration configuration) : IBlobService
+    public class BlobService : IBlobService
     {
-        private readonly string _defaultConnectionString = configuration.GetConnectionString("StorageAccount") ?? string.Empty;
+        private readonly string _defaultConnectionString = KeyVaultHelper.GetSecrectConnectionString("StorageAccountConnection");
 
         public BlobContainerClient GetBlobContainerClient(string containerName)
         {
