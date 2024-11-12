@@ -1,37 +1,27 @@
 ﻿using System.Net.Mail;
 using System.Net;
 using GamePlanner.Services.IServices;
+using GamePlanner.DTO.ConfigurationDTO;
 
 namespace GamePlanner.Services
 {
-    public class EmailService : IEmailService
+    public class EmailService(IConfiguration configuration) : IEmailService
     {
-        private readonly string _smptServer;
-        private readonly int _smptPort;
-        private readonly string _emailAddress;
-        private readonly string _password;
-
-        public EmailService(IConfiguration configuration)
-        {
-            var emailSettings = configuration.GetSection("EmailSettings");
-            _smptServer = emailSettings.GetValue<string>("Server") ?? throw new InvalidOperationException("Missing Server setting");
-            _smptPort = emailSettings.GetValue<int?>("Port") ?? throw new InvalidOperationException("Missing Port setting");
-            _emailAddress = emailSettings.GetValue<string>("Address") ?? throw new InvalidOperationException("Missing Address setting");
-            _password = emailSettings.GetValue<string>("Password") ?? throw new InvalidOperationException("Missing Password setting");
-        }
+        private readonly EmailSettingsDTO _emailSettings = configuration.GetSection("EmailSettings").Get<EmailSettingsDTO>() 
+            ?? throw new InvalidOperationException();
 
         public Task SendEmailAsync(string email, string subject, string message)
         {
-            var client = new SmtpClient(_smptServer, _smptPort)
+            var client = new SmtpClient(_emailSettings.SMPTServer, _emailSettings.SMPTPort)
             {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(_emailAddress, _password)
+                Credentials = new NetworkCredential(_emailSettings.EmailAddress, _emailSettings.EmailPassword)
             };
 
             return client.SendMailAsync(
                 new MailMessage(
-                    from: _emailAddress,
+                    from: _emailSettings.EmailAddress,
                     to: email,
                     subject,
                     message

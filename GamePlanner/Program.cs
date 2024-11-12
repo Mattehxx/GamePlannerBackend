@@ -72,7 +72,7 @@ builder.Services.AddSwaggerGen(option =>
     );
 });
 
-builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IBlobService, BlobService>();
 
 var app = builder.Build();
