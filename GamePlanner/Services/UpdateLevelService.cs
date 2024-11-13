@@ -12,31 +12,42 @@ namespace GamePlanner.Services
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            using var scope = _serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<GamePlannerDbContext>();
+
             while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(1000 * 60, cancellationToken);
+                await Task.Delay(1000 * 10, cancellationToken);
 
-                using var scope = _serviceProvider.CreateScope();
-                var dbContext = scope.ServiceProvider.GetRequiredService<GamePlannerDbContext>();
-
-                var reservations = await dbContext.GameSessions
-                    .Include(gs => gs.Reservations)?.ThenInclude(r => r.User)
-                    .Where(gs => gs.GameSessionEndTime > DateTime.Now.AddSeconds(-60)
-                    && gs.GameSessionEndTime < DateTime.Now)
-                    .SelectMany(gs => gs.Reservations)
-                    .ToListAsync(cancellationToken);
-
-                foreach (var singleReservation in reservations)
+                try
                 {
-                    if (singleReservation.User is not null && singleReservation.GameSession is not null)
+                    var oneMinuteAgo = DateTime.Now.AddSeconds(-60);
+
+                    var reservations = await dbContext.GameSessions
+                        .Include(gs => gs.Reservations)
+                        .Where(gs => gs.GameSessionEndTime > oneMinuteAgo
+                        && gs.GameSessionEndTime < DateTime.Now)
+                        .SelectMany(gs => gs.Reservations)
+                        .Include(r => r.User)
+                        .ToListAsync(cancellationToken);
+
+                    foreach (var singleReservation in reservations)
                     {
-                        singleReservation.User.Level += (int)
-                            (singleReservation.GameSession.GameSessionDate 
-                            - singleReservation.GameSession.GameSessionEndTime).TotalHours;
+                        if (singleReservation.User is not null && singleReservation.GameSession is not null)
+                        {
+                            singleReservation.User.Level += (int)
+                                (singleReservation.GameSession.GameSessionDate 
+                                - singleReservation.GameSession.GameSessionEndTime).TotalHours;
+                        }
                     }
+
+                    await dbContext.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
                 }
 
-                await dbContext.SaveChangesAsync();
             }
         }
     }

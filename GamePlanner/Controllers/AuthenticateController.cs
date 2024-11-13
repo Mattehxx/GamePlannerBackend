@@ -19,7 +19,7 @@ namespace Controllers.AuthenticateController
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWTSettingsDTO _JWTSettings;
-
+        
         public AuthenticateController(
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager)
