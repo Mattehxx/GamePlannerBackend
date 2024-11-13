@@ -35,7 +35,7 @@ namespace GamePlanner.Services
             return blobName;
         }
 
-        public async Task<Stream> DownloadBlobToStreamAsync(BlobContainerClient containerClient, string fileName)
+        public async Task<byte[]> DownloadBlobToStreamAsync(BlobContainerClient containerClient, string fileName)
         {
             BlobClient blobClient = containerClient.GetBlobClient(fileName);
 
@@ -43,9 +43,7 @@ namespace GamePlanner.Services
             {
                 using var memoryStream = new MemoryStream();
                 await blobClient.DownloadToAsync(memoryStream);
-                memoryStream.Position = 0;
-
-                return memoryStream;
+                return memoryStream.ToArray();
             }
 
             throw new FileNotFoundException("File not found in blob storage.");

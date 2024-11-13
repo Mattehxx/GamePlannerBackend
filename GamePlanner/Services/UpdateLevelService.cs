@@ -10,12 +10,16 @@ namespace GamePlanner.Services
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            using var scope = _serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<GamePlannerDbContext>();
+
             while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(1000 * 60, cancellationToken);
+                await Task.Delay(1000 * 10, cancellationToken);
 
-                using var scope = _serviceProvider.CreateScope();
-                var dbContext = scope.ServiceProvider.GetRequiredService<GamePlannerDbContext>();
+                try
+                {
+                    var oneMinuteAgo = DateTime.Now.AddSeconds(-60);
 
                 var reservations = await dbContext.GameSessions
                     .Include(gs => gs.Reservations)?.ThenInclude(r => r.User)
@@ -34,7 +38,13 @@ namespace GamePlanner.Services
                     }
                 }
 
-                await dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+
             }
         }
     }
