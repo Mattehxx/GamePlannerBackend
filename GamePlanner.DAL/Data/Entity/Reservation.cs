@@ -16,7 +16,7 @@ namespace GamePlanner.DAL.Data.Db
         public required string Phone { get; set; }
         public required DateTime BirthDate { get; set; }
         public required bool IsConfirmed { get; set; }
-        public required bool IsDelete { get; set; } = false;
+        public required bool IsDeleted { get; set; } = false;
         public string? UserId { get; set; }
         public required int GameSessionId { get; set; }
         public bool IsQueued { get; set; }

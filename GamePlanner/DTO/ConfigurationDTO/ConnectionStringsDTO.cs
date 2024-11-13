@@ -2,7 +2,7 @@
 {
     public class ConnectionStringsDTO
     {
-        public required string DbConnection { get; set; }
-        public required string StorageAccountConnection { get; set; }
+        public string DbConnection { get; set; }
+        public string StorageAccountConnection { get; set; }
     }
 }
