@@ -189,5 +189,6 @@ namespace GamePlanner.DTO
         };
         #endregion
         */
+        public Game ToEntity(GameInputDTO model) => throw new NotImplementedException();
     }
 }
