@@ -4,6 +4,7 @@ using GamePlanner.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamePlanner.DAL.Migrations
 {
     [DbContext(typeof(GamePlannerDbContext))]
-    partial class GamePlannerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241113153145_ReservationToken")]
+    partial class ReservationToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,9 +125,6 @@ namespace GamePlanner.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AdminUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -143,9 +143,12 @@ namespace GamePlanner.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("EventId");
 
-                    b.HasIndex("AdminUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Events");
                 });
@@ -174,7 +177,8 @@ namespace GamePlanner.DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("GameId");
 
@@ -445,11 +449,11 @@ namespace GamePlanner.DAL.Migrations
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Entity.Event", b =>
                 {
-                    b.HasOne("GamePlanner.DAL.Data.Auth.ApplicationUser", "AdminUser")
+                    b.HasOne("GamePlanner.DAL.Data.Auth.ApplicationUser", "User")
                         .WithMany("AdminEvents")
-                        .HasForeignKey("AdminUserId");
+                        .HasForeignKey("UserId");
 
-                    b.Navigation("AdminUser");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Entity.Preference", b =>

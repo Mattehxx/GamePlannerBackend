@@ -1,6 +1,8 @@
 ﻿using GamePlanner.DAL.Data.Auth;
 using GamePlanner.DTO.ConfigurationDTO;
+using GamePlanner.Enums;
 using GamePlanner.Helpers;
+using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,16 +21,37 @@ namespace Controllers.AuthenticateController
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWTSettingsDTO _JWTSettings;
+        private readonly IEmailService _emailService;
         
-        public AuthenticateController(
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+        public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _JWTSettings = KeyVaultHelper.GetSecret<JWTSettingsDTO>("JWTSettings")
                 ?? throw new InvalidOperationException(nameof(_JWTSettings));
+            _emailService = emailService;
         }
+
+        [HttpGet("test")]
+        public async Task<IActionResult> Test()
+        {
+            ConfirmReservationHelper confirmReservationHelper = new(_emailService);
+            await confirmReservationHelper.SendConfirmationEmailAsync(
+                "teorove04@gmail.com",
+                1,
+                "MyUniqueId",
+                Guid.NewGuid().ToString()
+            );
+            return Ok();
+        }
+
+        [HttpGet("confirm")]
+        public async Task<IActionResult> Confirm(int sessionId, string userId, string token)
+        {
+            return Ok($"SessionId: {sessionId} UserId: {userId} Token: {token}");
+        }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)

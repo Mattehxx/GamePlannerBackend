@@ -59,16 +59,31 @@ namespace GamePlanner.Services
             return _smtpClient.SendMailAsync(mailMessage);
         }
 
+        public async Task SendConfirmationEmailAsync(string receiver, int sessionId, string userId, string token)
+        {
+            var uniqueUrl = GenerateConfirmationLink(sessionId, userId, token);
+            var templateName = GetEmailTemplateName(EmailTemplateEnum.ConfirmReservation);
+            var template = await GetEmailTemplateAsync(templateName);
+            template = ComputeEmailTemplate(
+                template,
+                new Dictionary<string, string>{
+                    { "code", uniqueUrl }
+                }
+            );
+
+            await SendEmailAsync(receiver, "Confirm reservation", template);
+        }
+
         public string GetEmailTemplateName(EmailTemplateEnum template)
         {
             return template switch
             {
-                EmailTemplateEnum.ConfirmCode => "ConfirmCodeEmailTemplate",
+                EmailTemplateEnum.ConfirmReservation => "ConfirmReservationEmailTemplate",
                 _ => throw new ArgumentOutOfRangeException(nameof(template), template, null),
             };
         }
 
-        public async Task<string> GetEmailTemplate(string templateName)
+        public async Task<string> GetEmailTemplateAsync(string templateName)
         {
             if (!File.Exists($"Templates/{templateName}.html"))
             {
@@ -85,6 +100,12 @@ namespace GamePlanner.Services
             }
 
             return template;
+        }
+
+        public string GenerateConfirmationLink(int sessionId, string userId, string token)
+        {
+            var baseUrl = KeyVaultHelper.GetSecretString("BaseUrl");
+            return $"{baseUrl}api/confirm?sessionId={sessionId}&userId={userId}&token={token}";
         }
     }
 }
