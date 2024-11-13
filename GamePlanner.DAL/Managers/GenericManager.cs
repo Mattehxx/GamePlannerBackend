@@ -24,9 +24,8 @@ namespace GamePlanner.DAL.Managers
 
         public virtual async Task<T> CreateAsync(T entity)
         {
-           _dbSet.Add(entity);
-           await _context.SaveChangesAsync();
-           return entity;
+           await _dbSet.AddAsync(entity);
+           return await _context.SaveChangesAsync() > 0 ? entity : throw new Exception("Error");
         }
 
         public async Task<T> UpdateAsync(int id, JsonPatchDocument<T> patchDocument)

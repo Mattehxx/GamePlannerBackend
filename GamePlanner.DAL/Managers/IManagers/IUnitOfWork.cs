@@ -11,6 +11,6 @@ namespace GamePlanner.Services
         public ITableManager TableManager { get; }
         public IRecurrenceManager RecurrenceManager { get; }
         public IReservationManager ReservationManager { get; }
-        public Task<ActionResult<bool>> Commit();
+        public Task<IActionResult<bool>> Commit();
     }
 }

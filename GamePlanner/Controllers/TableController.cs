@@ -1,7 +1,7 @@
 ﻿using GamePlanner.DAL.Data.Db;
-using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
+using GamePlanner.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -13,9 +13,9 @@ namespace GamePlanner.Controllers
     [ApiController]
     public class TableController : ODataController
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly Mapper _mapper;
-        public TableController(UnitOfWork unitOfWork, Mapper mapper)
+        public TableController( IUnitOfWork unitOfWork, Mapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -29,7 +29,7 @@ namespace GamePlanner.Controllers
                 if (model == null) return BadRequest("No table found");
                 Table entity = _mapper.ToEntity(model);
                 await _unitOfWork.TableManager.CreateAsync(entity);
-                return (await _unitOfWork.Commit()).Value ? Ok(_mapper.ToModel(entity)) : BadRequest("Table impossible to create");
+                return (await _unitOfWork.Commit()) ? Ok(_mapper.ToModel(entity)) : BadRequest("Table impossible to create");
             }
             catch (Exception ex)
             {
