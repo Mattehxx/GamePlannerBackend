@@ -27,7 +27,7 @@ namespace GamePlanner.DAL.Managers
         public IReservationManager ReservationManager { get; private set; }
         public ITableManager TableManager { get; private set; }
 
-        public async Task<ActionResult<bool>> Commit()
+        public async Task<IActionResult<bool>> Commit()
         {
             return  await _context.SaveChangesAsync() > 0 ? true : false;
         }
