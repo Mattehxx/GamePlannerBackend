@@ -7,6 +7,7 @@ namespace GamePlanner.DTO.InputDTO
     {
         [MaxLength(50)]
         public required string Name { get; set; }
+        public int Day { get; set; }
         public List<EventInputDTO>? Events { get; set; }
     }
 }

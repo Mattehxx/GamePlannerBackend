@@ -22,7 +22,7 @@ namespace GamePlanner.DAL.Managers
             return await query.ToListAsync();
         }
 
-        public async Task<T> CreateAsync(T entity)
+        public virtual async Task<T> CreateAsync(T entity)
         {
            _dbSet.Add(entity);
            await _context.SaveChangesAsync();
