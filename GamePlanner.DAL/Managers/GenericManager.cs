@@ -16,30 +16,42 @@ namespace GamePlanner.DAL.Managers
             _dbSet = _context.Set<T>();
         }
 
-        public async Task<List<T>> GetAsync(ODataQueryOptions oDataQueryOptions)
+        public IQueryable Get(ODataQueryOptions<T> oDataQueryOptions)
         {
-            var query = (IQueryable<T>)oDataQueryOptions.ApplyTo(_dbSet);
-            return await query.ToListAsync();
+            return oDataQueryOptions.ApplyTo(_dbSet);
+        }
+
+        public async Task<T> GetByIdAsync(int id)
+        {
+            return await _dbSet.FindAsync(id)
+                ?? throw new InvalidOperationException("Entity not found");
         }
 
         public virtual async Task<T> CreateAsync(T entity)
         {
-           await _dbSet.AddAsync(entity);
-           return await _context.SaveChangesAsync() > 0 ? entity : throw new Exception("Error");
+            await _dbSet.AddAsync(entity);
+            return await _context.SaveChangesAsync() > 0 ? entity
+                : throw new InvalidOperationException("Failed to create entity");
         }
 
         public async Task<T> UpdateAsync(int id, JsonPatchDocument<T> patchDocument)
         {
-            var entity = await _dbSet.FindAsync(id);
+            var entity = await _dbSet.FindAsync(id) 
+                ?? throw new InvalidOperationException("Entity not found");
+
             patchDocument.ApplyTo(entity);
-            return entity;
+            return await _context.SaveChangesAsync() > 0 ? entity
+               : throw new InvalidOperationException("Failed to update entity");
         }
 
-        public async Task<T> DeleteAsync(int id)
+        public virtual async Task<T> DeleteAsync(int id)
         {
-            var entity = await _dbSet.FindAsync(id);
+            var entity = await _dbSet.FindAsync(id)
+                ?? throw new InvalidOperationException("Entity not found");
+
             _dbSet.Remove(entity);
-            return entity;
+            return await _context.SaveChangesAsync() > 0 ? entity
+                : throw new InvalidOperationException("Failed to delete entity");
         }
     }
 }

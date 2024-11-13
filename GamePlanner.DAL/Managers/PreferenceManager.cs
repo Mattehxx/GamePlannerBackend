@@ -4,11 +4,11 @@ using GamePlanner.DAL.Managers.IManagers;
 
 namespace GamePlanner.DAL.Managers
 {
-    public class GameManager(GamePlannerDbContext context) : GenericManager<Game>(context), IGameManager
+    public class PreferenceManager(GamePlannerDbContext context) : GenericManager<Preference>(context), IPreferenceManager
     {
-        public override async Task<Game> DeleteAsync(int id)
+        public override async Task<Preference> DeleteAsync(int id)
         {
-            Game entity = await GetByIdAsync(id);
+            Preference entity = await GetByIdAsync(id);
             entity.IsDeleted = true;
             return await _context.SaveChangesAsync() > 0
                 ? entity

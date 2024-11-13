@@ -80,7 +80,6 @@ namespace Controllers.AuthenticateController
                 Name = model.Name,
                 Surname = model.Surname,
                 BirthDate = model.BirthDate,
-                CanBeMaster = model.CanBeMaster,
                 Level = 0,
                 UserName = model.Email
             };
@@ -105,7 +104,6 @@ namespace Controllers.AuthenticateController
                 Name = model.Name,
                 Surname = model.Surname,
                 BirthDate = model.BirthDate,
-                CanBeMaster = model.CanBeMaster,
                 Level = 0,
                 UserName= model.Email
             };

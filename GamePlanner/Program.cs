@@ -4,7 +4,6 @@ using GamePlanner.DAL.Data;
 using GamePlanner.DAL.Data.Auth;
 using GamePlanner.DTO.ConfigurationDTO;
 using GamePlanner.Helpers;
-using GamePlanner.DAL.Data.Db;
 using GamePlanner.DAL.Managers;
 using GamePlanner.Services;
 using GamePlanner.Services.IServices;
@@ -18,6 +17,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using GamePlanner.DAL.Managers.IManagers;
 using GamePlanner.DTO;
+using GamePlanner.DAL.Data.Entity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,14 +28,16 @@ builder.Services.AddSingleton<IBlobService, BlobService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<Mapper>(); 
 
+//OData
 var modelbuilder = new ODataConventionModelBuilder();
-modelbuilder.EntitySet<Event>("Events");
-modelbuilder.EntitySet<Game>("Games");
-modelbuilder.EntitySet<GameSession>("GameSessions");
-modelbuilder.EntitySet<Recurrence>("Recurrences");
-modelbuilder.EntitySet<Reservation>("Reservations");
-modelbuilder.EntitySet<Table>("Tables");
+modelbuilder.EntitySet<Event>("Event");
+modelbuilder.EntitySet<Game>("Game");
+modelbuilder.EntitySet<Knowledge>("Knowledge");
+modelbuilder.EntitySet<Preference>("Preference");
+modelbuilder.EntitySet<Reservation>("Reservation");
+modelbuilder.EntitySet<Session>("Session");
 modelbuilder.EnableLowerCamelCaseForPropertiesAndEnums();
+
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {

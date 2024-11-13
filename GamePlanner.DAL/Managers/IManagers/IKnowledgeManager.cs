@@ -2,7 +2,8 @@
 
 namespace GamePlanner.DAL.Managers.IManagers
 {
-    public interface IReservationManager : IManager<Reservation>
+    public interface IKnowledgeManager : IManager<Knowledge>
     {
+
     }
 }

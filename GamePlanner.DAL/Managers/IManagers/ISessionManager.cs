@@ -2,7 +2,7 @@
 
 namespace GamePlanner.DAL.Managers.IManagers
 {
-    public interface IReservationManager : IManager<Reservation>
+    public interface ISessionManager : IManager<Session>
     {
     }
 }

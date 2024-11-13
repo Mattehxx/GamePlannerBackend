@@ -1,8 +1,7 @@
-﻿using GamePlanner.DAL.Data.Db;
+﻿using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
-using GamePlanner.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -14,12 +13,27 @@ namespace GamePlanner.Controllers
     [ApiController]
     public class EventController : ODataController
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly UnitOfWork _unitOfWork;
         private readonly Mapper _mapper;
-        public EventController(IUnitOfWork unitOfWork, Mapper mapper)
+        public EventController(UnitOfWork unitOfWork, Mapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+        }
+
+        [HttpGet]
+        public IActionResult GetOdata(ODataQueryOptions<Event> oDataQueryOptions)
+        {
+            try
+            {
+                return oDataQueryOptions != null 
+                    ? Ok(_unitOfWork.EventManager.Get(oDataQueryOptions)) 
+                    : BadRequest("No event found");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         [HttpPost]
@@ -27,13 +41,15 @@ namespace GamePlanner.Controllers
         {
             try
             {
-              if (model == null) return BadRequest("No event found");
-              Event entity = _mapper.ToEntity(model);
-              await _unitOfWork.EventManager.CreateAsync(entity);
-              return (await _unitOfWork.Commit()).Value ? Ok(_mapper.ToModel(entity)) : BadRequest("Event impossible to create");
-            }catch (Exception ex) 
+                throw new NotImplementedException();
+                //if (model == null) return BadRequest("Invalid event");
+                //Event entity = _mapper.ToEntity(model);
+                //await _unitOfWork.EventManager.CreateAsync(entity);
+                //return (await _unitOfWork.Commit()).Value ? Ok(_mapper.ToModel(entity)) : BadRequest("Event creation failed");
+            }
+            catch (Exception ex)
             {
-              return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -42,25 +58,26 @@ namespace GamePlanner.Controllers
         {
             try
             {
-              Event updatedEntity = await _unitOfWork.EventManager.UpdateAsync(id,jsonPatch);
-              return (await _unitOfWork.Commit()).Value ? Ok(updatedEntity) : BadRequest("Event impossible to create");
+                throw new NotImplementedException();
+                //Event updatedEntity = await _unitOfWork.EventManager.UpdateAsync(id, jsonPatch);
+                //return (await _unitOfWork.Commit()).Value ? Ok(updatedEntity) : BadRequest("Event update failed");
             }
             catch (Exception ex)
             {
-              return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetOdata(ODataQueryOptions oDataQueryOptions)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-           try
+            try
             {
-              return oDataQueryOptions != null ? Ok(await _unitOfWork.EventManager.GetAsync(oDataQueryOptions)) : BadRequest("No event found");
+                throw new NotImplementedException();
             }
             catch (Exception ex)
             {
-              return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
     }

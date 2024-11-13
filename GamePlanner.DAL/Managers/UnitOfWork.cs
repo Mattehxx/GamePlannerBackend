@@ -2,34 +2,17 @@
 using GamePlanner.DAL.Managers.IManagers;
 using GamePlanner.Managers;
 using GamePlanner.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace GamePlanner.DAL.Managers
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork(GamePlannerDbContext context) : IUnitOfWork
     {
-        public readonly GamePlannerDbContext _context;
-        public UnitOfWork(GamePlannerDbContext context)
-        {
-            _context = context;
-            EventManager = new EventManager(context);
-            GameManager = new GameManager(context);
-            GameSessionManager = new GameSessionManager(context);
-            RecurrenceManager = new RecurrenceManager(context);
-            ReservationManager = new ReservationManager(context);
-            TableManager = new TableManager(context);
-        }
-
-        public IEventManager EventManager { get; private set; }
-        public IGameManager GameManager { get; private set; }
-        public IGameSessionManager GameSessionManager { get; private set; }
-        public IRecurrenceManager RecurrenceManager { get; private set; }
-        public IReservationManager ReservationManager { get; private set; }
-        public ITableManager TableManager { get; private set; }
-
-        public async Task<IActionResult<bool>> Commit()
-        {
-            return  await _context.SaveChangesAsync() > 0 ? true : false;
-        }
+        public readonly GamePlannerDbContext _context = context;
+        public IEventManager EventManager { get; private set; } = new EventManager(context);
+        public IGameManager GameManager { get; private set; } = new GameManager(context);
+        public IKnowledgeManager KnowledgeManager { get; private set; } = new KnowledgeManager(context);
+        public IPreferenceManager PreferenceManager { get; private set; } = new PreferenceManager(context);
+        public IReservationManager ReservationManager { get; private set; } = new ReservationManager(context);
+        public ISessionManager SessionManager { get; private set; } = new SessionManager(context);
     }
 }

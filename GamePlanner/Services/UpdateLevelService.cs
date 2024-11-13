@@ -19,27 +19,27 @@ namespace GamePlanner.Services
 
                 try
                 {
-                    var oneMinuteAgo = DateTime.Now.AddSeconds(-60);
+                    //var oneMinuteAgo = DateTime.Now.AddSeconds(-60);
 
-                    var reservations = await dbContext.GameSessions
-                        .Include(gs => gs.Reservations)
-                        .Where(gs => gs.GameSessionEndDate > oneMinuteAgo
-                        && gs.GameSessionEndDate < DateTime.Now)
-                        .SelectMany(gs => gs.Reservations)
-                        .Include(r => r.User)
-                        .ToListAsync(cancellationToken);
+                    //var reservations = await dbContext.GameSessions
+                    //    .Include(gs => gs.Reservations)
+                    //    .Where(gs => gs.GameSessionEndDate > oneMinuteAgo
+                    //    && gs.GameSessionEndDate < DateTime.Now)
+                    //    .SelectMany(gs => gs.Reservations)
+                    //    .Include(r => r.User)
+                    //    .ToListAsync(cancellationToken);
 
-                    foreach (var singleReservation in reservations)
-                    {
-                        if (singleReservation.User is not null && singleReservation.GameSession is not null)
-                        {
-                            singleReservation.User.Level += (int)
-                                (singleReservation.GameSession.GameSessionStartDate 
-                                - singleReservation.GameSession.GameSessionEndDate).TotalHours;
-                        }
-                    }
+                    //foreach (var singleReservation in reservations)
+                    //{
+                    //    if (singleReservation.User is not null && singleReservation.GameSession is not null)
+                    //    {
+                    //        singleReservation.User.Level += (int)
+                    //            (singleReservation.GameSession.GameSessionStartDate 
+                    //            - singleReservation.GameSession.GameSessionEndDate).TotalHours;
+                    //    }
+                    //}
 
-                    await dbContext.SaveChangesAsync();
+                    //await dbContext.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
