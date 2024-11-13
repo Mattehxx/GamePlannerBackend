@@ -19,27 +19,25 @@ namespace GamePlanner.Services
 
                 try
                 {
-                    //var oneMinuteAgo = DateTime.Now.AddSeconds(-60);
+                    var oneMinuteAgo = DateTime.Now.AddSeconds(-60);
 
-                    //var reservations = await dbContext.GameSessions
-                    //    .Include(gs => gs.Reservations)
-                    //    .Where(gs => gs.GameSessionEndDate > oneMinuteAgo
-                    //    && gs.GameSessionEndDate < DateTime.Now)
-                    //    .SelectMany(gs => gs.Reservations)
-                    //    .Include(r => r.User)
-                    //    .ToListAsync(cancellationToken);
+                    var sessions = await dbContext.Sessions
+                        .Where(s => s.EndDate > oneMinuteAgo && s.EndDate < DateTime.Now)
+                        .ToListAsync(cancellationToken);
 
-                    //foreach (var singleReservation in reservations)
-                    //{
-                    //    if (singleReservation.User is not null && singleReservation.GameSession is not null)
-                    //    {
-                    //        singleReservation.User.Level += (int)
-                    //            (singleReservation.GameSession.GameSessionStartDate 
-                    //            - singleReservation.GameSession.GameSessionEndDate).TotalHours;
-                    //    }
-                    //}
+                    foreach (var session in sessions)
+                    {
+                        var reservation = await dbContext.Reservations
+                            .Include(r => r.User)
+                            .FirstOrDefaultAsync(r => r.SessionId == session.SessionId, cancellationToken);
 
-                    //await dbContext.SaveChangesAsync();
+                        if (reservation is not null && reservation.User is not null)
+                        {
+                            reservation.User.Level += (int)(session.StartDate - session.EndDate).TotalHours;
+                        }
+                    }
+
+                    await dbContext.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
