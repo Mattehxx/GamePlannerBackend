@@ -1,12 +1,8 @@
-﻿using GamePlanner.DAL.Data.Db;
-using System.ComponentModel.DataAnnotations;
-
-namespace GamePlanner.DTO.OutputDTO
+﻿namespace GamePlanner.DTO.OutputDTO.GeneralDTO
 {
     public class RecurrenceOutputDTO
     {
         public required int RecurrenceId { get; set; }
-        [MaxLength(50)]
         public required string Name { get; set; }
     }
 }

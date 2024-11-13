@@ -13,7 +13,7 @@ namespace GamePlanner.Managers
         {
             entity.Recurrence.Name = "settimanale";
             var delayDay = 7;
-            var startDate = entity.EventDate;
+            var startDate = entity.EventStartDate;
             while(startDate < entity.EventEndDate)
             {
                 var endDate = startDate.AddHours(entity.Duration);

@@ -1,7 +1,5 @@
 ﻿
 using GamePlanner.DAL.Data;
-using GamePlanner.DAL.Data.Auth;
-using GamePlanner.DAL.Managers;
 using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.Services
@@ -21,8 +19,8 @@ namespace GamePlanner.Services
 
                 var reservations = await dbContext.GameSessions
                     .Include(gs => gs.Reservations)?.ThenInclude(r => r.User)
-                    .Where(gs => gs.GameSessionEndTime > DateTime.Now.AddSeconds(-60)
-                    && gs.GameSessionEndTime < DateTime.Now)
+                    .Where(gs => gs.GameSessionEndDate > DateTime.Now.AddSeconds(-60)
+                    && gs.GameSessionEndDate < DateTime.Now)
                     .SelectMany(gs => gs.Reservations)
                     .ToListAsync(cancellationToken);
 
@@ -31,8 +29,8 @@ namespace GamePlanner.Services
                     if (singleReservation.User is not null && singleReservation.GameSession is not null)
                     {
                         singleReservation.User.Level += (int)
-                            (singleReservation.GameSession.GameSessionDate 
-                            - singleReservation.GameSession.GameSessionEndTime).TotalHours;
+                            (singleReservation.GameSession.GameSessionStartDate 
+                            - singleReservation.GameSession.GameSessionEndDate).TotalHours;
                     }
                 }
 
