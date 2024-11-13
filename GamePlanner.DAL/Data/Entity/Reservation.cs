@@ -1,5 +1,4 @@
 ﻿using GamePlanner.DAL.Data.Auth;
-using System.ComponentModel.DataAnnotations;
 
 namespace GamePlanner.DAL.Data.Entity
 {

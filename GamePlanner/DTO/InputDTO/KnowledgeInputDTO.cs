@@ -1,8 +1,8 @@
 ﻿namespace GamePlanner.DTO.InputDTO
 {
-    public class RecurrenceInputDTO
+    public class KnowledgeInputDTO
     {
         public required string Name { get; set; }
-        public required int Day { get; set; }
+        public required bool IsDeleted { get; set; }
     }
 }

@@ -4,6 +4,5 @@
     {
         public const string Admin = "Admin";
         public const string Normal = "Normal";
-        public const string Master = "Master";
     }
 }

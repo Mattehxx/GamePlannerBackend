@@ -1,11 +1,14 @@
 ﻿using GamePlanner.DAL.Data.Entity;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace GamePlanner.DAL.Data.Auth
 {
     public class ApplicationUser : IdentityUser
     {
+        [RegularExpression(@"^[A-Za-zÀ-ÖØ-öø-ÿ'\- ]{1,50}$", ErrorMessage = "Name format not valid")]
         public required string Name { get; set; }
+        [RegularExpression(@"^[A-Za-zÀ-ÖØ-öø-ÿ'\- ]{1,50}$", ErrorMessage = "Name format not valid")]
         public required string Surname { get; set; }
         public required DateTime BirthDate { get; set; }
         public string? ImgUrl { get; set; }

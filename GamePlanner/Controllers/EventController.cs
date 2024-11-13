@@ -2,6 +2,7 @@
 using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
+using GamePlanner.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -13,9 +14,9 @@ namespace GamePlanner.Controllers
     [ApiController]
     public class EventController : ODataController
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly Mapper _mapper;
-        public EventController(UnitOfWork unitOfWork, Mapper mapper)
+        public EventController(IUnitOfWork unitOfWork, Mapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

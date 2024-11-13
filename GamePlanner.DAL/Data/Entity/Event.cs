@@ -13,7 +13,7 @@ namespace GamePlanner.DAL.Data.Entity
         public required string ImgUrl { get; set; }
         public required bool IsDeleted { get; set; } = false;
         public required string AdminId { get; set; }
-        public ApplicationUser? User { get; set; }
+        public ApplicationUser? AdminUser { get; set; }
         public List<Session>? Sessions { get; set; }
     }
 }
