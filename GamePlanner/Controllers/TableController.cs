@@ -20,7 +20,7 @@ namespace GamePlanner.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-
+        #region CRUD
         [HttpPost]
         public async Task<IActionResult> Create(TableInputDTO model)
         {
@@ -63,5 +63,21 @@ namespace GamePlanner.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        #endregion
+
+
+        #region Custom
+        [HttpGet,Route("Availability/{startDate}/{endDate}")]
+        public async Task<IActionResult> GetTablesAvailability(DateTime startDate,DateTime endDate)
+        {
+            try
+            {
+                return Ok(await _unitOfWork.TableManager.GetTablesAvailability(startDate, endDate));
+            }catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        #endregion
     }
 }

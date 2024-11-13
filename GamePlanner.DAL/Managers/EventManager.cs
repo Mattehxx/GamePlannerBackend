@@ -50,5 +50,6 @@ namespace GamePlanner.Managers
             await _context.SaveChangesAsync();
             return entity;
         }
+        
     }
 }
