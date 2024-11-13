@@ -25,8 +25,8 @@ namespace GamePlanner.Services
 
                     var reservations = await dbContext.GameSessions
                         .Include(gs => gs.Reservations)
-                        .Where(gs => gs.GameSessionEndTime > oneMinuteAgo
-                        && gs.GameSessionEndTime < DateTime.Now)
+                        .Where(gs => gs.GameSessionEndDate > oneMinuteAgo
+                        && gs.GameSessionEndDate < DateTime.Now)
                         .SelectMany(gs => gs.Reservations)
                         .Include(r => r.User)
                         .ToListAsync(cancellationToken);
@@ -36,8 +36,8 @@ namespace GamePlanner.Services
                         if (singleReservation.User is not null && singleReservation.GameSession is not null)
                         {
                             singleReservation.User.Level += (int)
-                                (singleReservation.GameSession.GameSessionDate 
-                                - singleReservation.GameSession.GameSessionEndTime).TotalHours;
+                                (singleReservation.GameSession.GameSessionStartDate 
+                                - singleReservation.GameSession.GameSessionEndDate).TotalHours;
                         }
                     }
 

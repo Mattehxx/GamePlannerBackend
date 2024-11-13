@@ -170,7 +170,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Db.Game", b =>
@@ -202,7 +202,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasKey("GameId");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
                 });
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Db.GameSession", b =>
@@ -239,7 +239,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasIndex("TableId");
 
-                    b.ToTable("GameSessions");
+                    b.ToTable("GameSessions", (string)null);
                 });
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Db.Recurrence", b =>
@@ -260,7 +260,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasKey("RecurrenceId");
 
-                    b.ToTable("Recurrences");
+                    b.ToTable("Recurrences", (string)null);
                 });
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Db.Reservation", b =>
@@ -315,7 +315,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reservations");
+                    b.ToTable("Reservations", (string)null);
                 });
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Db.Table", b =>
@@ -339,7 +339,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasKey("TableId");
 
-                    b.ToTable("Tables");
+                    b.ToTable("Tables", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

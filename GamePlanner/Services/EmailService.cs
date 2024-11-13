@@ -3,6 +3,7 @@ using System.Net;
 using GamePlanner.Services.IServices;
 using GamePlanner.DTO.ConfigurationDTO;
 using GamePlanner.Helpers;
+using GamePlanner.Enums;
 
 namespace GamePlanner.Services
 {
@@ -21,14 +22,16 @@ namespace GamePlanner.Services
                 Credentials = new NetworkCredential(_emailSettings.EmailAddress, _emailSettings.EmailPassword)
             };
 
-            return _smtpClient.SendMailAsync(
-                new MailMessage(
-                    from: _emailSettings.EmailAddress,
-                    to: email,
-                    subject,
-                    message
-                )
-            );
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress(_emailSettings.EmailAddress),
+                To = { email },
+                Subject = subject,
+                Body = message,
+                IsBodyHtml = true
+            };
+
+            return _smtpClient.SendMailAsync(mailMessage);
         }
 
         public Task SendEmailAsync(IEnumerable<string> emails, string subject, string message)
@@ -54,6 +57,34 @@ namespace GamePlanner.Services
             }
 
             return _smtpClient.SendMailAsync(mailMessage);
+        }
+
+        public string GetEmailTemplateName(EmailTemplateEnum template)
+        {
+            return template switch
+            {
+                EmailTemplateEnum.ConfirmCode => "ConfirmCodeEmailTemplate",
+                _ => throw new ArgumentOutOfRangeException(nameof(template), template, null),
+            };
+        }
+
+        public async Task<string> GetEmailTemplate(string templateName)
+        {
+            if (!File.Exists($"Templates/{templateName}.html"))
+            {
+                throw new FileNotFoundException($"Template {templateName} not found");
+            }
+            return string.Concat(await File.ReadAllLinesAsync($"Templates/{templateName}.html"));
+        }
+
+        public string ComputeEmailTemplate(string template, Dictionary<string, string> values)
+        {
+            foreach (var (key, value) in values)
+            {
+                template = template.Replace("{{" + key + "}}", value);
+            }
+
+            return template;
         }
     }
 }
