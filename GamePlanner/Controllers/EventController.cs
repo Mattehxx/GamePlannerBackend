@@ -1,6 +1,4 @@
-﻿using Azure;
-using GamePlanner.DAL.Data;
-using GamePlanner.DAL.Data.Db;
+﻿using GamePlanner.DAL.Data.Db;
 using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
@@ -11,7 +9,7 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace GamePlanner.Controllers
 {
-    [Route("api/")]
+    [Route("api/[controller]")]
     [ApiController]
     public class EventController : ODataController
     {
@@ -23,7 +21,7 @@ namespace GamePlanner.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost("events")]
+        [HttpPost]
         public async Task<IActionResult> Create(EventInputDTO model)
         {
             try
@@ -38,7 +36,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [HttpPatch("events/{id}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<Event> jsonPatch)
         {
             try
@@ -52,7 +50,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [HttpGet("events")]
+        [HttpGet]
         public async Task<IActionResult> GetOdata(ODataQueryOptions oDataQueryOptions)
         {
            try
