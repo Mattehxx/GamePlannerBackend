@@ -16,6 +16,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using GamePlanner.DAL.Managers.IManagers;
+using GamePlanner.DTO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,8 +26,7 @@ builder.Services.AddHostedService<UpdateLevelService>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IBlobService, BlobService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-builder.Services.AddControllers();
+builder.Services.AddSingleton<Mapper>(); 
 
 var modelbuilder = new ODataConventionModelBuilder();
 modelbuilder.EntitySet<Event>("Events");

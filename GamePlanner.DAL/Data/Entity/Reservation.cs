@@ -6,13 +6,15 @@ namespace GamePlanner.DAL.Data.Db
     public class Reservation
     {
         public required int ReservationId { get; set; }
-        [MaxLength(50)]
+        [RegularExpression(@"^[A-Za-zÀ-ÖØ-öø-ÿ'\- ]{1,50}$", ErrorMessage = "Name format not valid")]
         public required string Name { get; set; }
-        [MaxLength(50)]
+        [RegularExpression(@"^[A-Za-zÀ-ÖØ-öø-ÿ'\- ]{1,50}$", ErrorMessage = "Name format not valid")]
         public required string Surname { get; set; }
-        [MaxLength(100)]
+
+        [RegularExpression(@"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,100}$", ErrorMessage = "Email format not valid")]
         public required string Email { get; set; }
-        [MaxLength(25)]
+
+        [RegularExpression(@"^\+?\d{1,3}?[- .]?\(?\d{1,4}?\)?[- .]?\d{1,4}[- .]?\d{1,9}$", ErrorMessage = "Phone number format not valid")]
         public required string Phone { get; set; }
         public required DateTime BirthDate { get; set; }
         public required bool IsConfirmed { get; set; }

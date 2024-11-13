@@ -4,6 +4,7 @@ using GamePlanner.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamePlanner.DAL.Migrations
 {
     [DbContext(typeof(GamePlannerDbContext))]
-    partial class GamePlannerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241113075828_AddRegularExpression")]
+    partial class AddRegularExpression
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,7 +172,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Db.Game", b =>
@@ -200,7 +203,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasKey("GameId");
 
-                    b.ToTable("Games", (string)null);
+                    b.ToTable("Games");
                 });
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Db.GameSession", b =>
@@ -237,7 +240,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasIndex("TableId");
 
-                    b.ToTable("GameSessions", (string)null);
+                    b.ToTable("GameSessions");
                 });
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Db.Recurrence", b =>
@@ -257,7 +260,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasKey("RecurrenceId");
 
-                    b.ToTable("Recurrences", (string)null);
+                    b.ToTable("Recurrences");
                 });
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Db.Reservation", b =>
@@ -308,7 +311,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reservations", (string)null);
+                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("GamePlanner.DAL.Data.Db.Table", b =>
@@ -331,7 +334,7 @@ namespace GamePlanner.DAL.Migrations
 
                     b.HasKey("TableId");
 
-                    b.ToTable("Tables", (string)null);
+                    b.ToTable("Tables");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

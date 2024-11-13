@@ -1,7 +1,5 @@
 ﻿
 using GamePlanner.DAL.Data;
-using GamePlanner.DAL.Data.Auth;
-using GamePlanner.DAL.Managers;
 using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.Services
