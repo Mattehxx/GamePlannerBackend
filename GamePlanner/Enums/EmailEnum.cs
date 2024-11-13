@@ -2,6 +2,6 @@
 {
     public enum EmailTemplateEnum
     {
-        ConfirmCode
+        ConfirmReservation
     }
 }
