@@ -26,7 +26,7 @@ builder.Services.AddHostedService<UpdateLevelService>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IBlobService, BlobService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddSingleton<Mapper>(); 
+builder.Services.AddSingleton<Mapper>();
 
 //OData
 var modelbuilder = new ODataConventionModelBuilder();
