@@ -1,7 +1,5 @@
 ﻿
 using GamePlanner.DAL.Data;
-using GamePlanner.DAL.Data.Auth;
-using GamePlanner.DAL.Managers;
 using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.Services
@@ -23,23 +21,22 @@ namespace GamePlanner.Services
                 {
                     var oneMinuteAgo = DateTime.Now.AddSeconds(-60);
 
-                    var reservations = await dbContext.GameSessions
-                        .Include(gs => gs.Reservations)
-                        .Where(gs => gs.GameSessionEndTime > oneMinuteAgo
-                        && gs.GameSessionEndTime < DateTime.Now)
-                        .SelectMany(gs => gs.Reservations)
-                        .Include(r => r.User)
-                        .ToListAsync(cancellationToken);
+                var reservations = await dbContext.GameSessions
+                    .Include(gs => gs.Reservations)?.ThenInclude(r => r.User)
+                    .Where(gs => gs.GameSessionEndDate > DateTime.Now.AddSeconds(-60)
+                    && gs.GameSessionEndDate < DateTime.Now)
+                    .SelectMany(gs => gs.Reservations)
+                    .ToListAsync(cancellationToken);
 
-                    foreach (var singleReservation in reservations)
+                foreach (var singleReservation in reservations)
+                {
+                    if (singleReservation.User is not null && singleReservation.GameSession is not null)
                     {
-                        if (singleReservation.User is not null && singleReservation.GameSession is not null)
-                        {
-                            singleReservation.User.Level += (int)
-                                (singleReservation.GameSession.GameSessionDate 
-                                - singleReservation.GameSession.GameSessionEndTime).TotalHours;
-                        }
+                        singleReservation.User.Level += (int)
+                            (singleReservation.GameSession.GameSessionStartDate 
+                            - singleReservation.GameSession.GameSessionEndDate).TotalHours;
                     }
+                }
 
                     await dbContext.SaveChangesAsync();
                 }
