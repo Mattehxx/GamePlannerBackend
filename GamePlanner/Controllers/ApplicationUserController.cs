@@ -1,8 +1,8 @@
-﻿using GamePlanner.DAL.Data.Entity;
+﻿using GamePlanner.DAL.Data.Auth;
 using GamePlanner.DAL.Managers;
-using GamePlanner.DTO.InputDTO;
 using GamePlanner.DTO;
-using Microsoft.AspNetCore.Http;
+using GamePlanner.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -12,43 +12,34 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class KnowledgeController(UnitOfWork unitOfWork, Mapper mapper) : ODataController
+    public class ApplicationUserController(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork,
+        Mapper mapper) : ODataController
     {
-        private readonly UnitOfWork _unitOfWork = unitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly Mapper _mapper = mapper;
 
         #region CRUD
+
         [HttpGet]
-        public IActionResult Get(ODataQueryOptions<Knowledge> options)
+        public IActionResult Get(ODataQueryOptions<ApplicationUser> options)
         {
             try
             {
-                return Ok(_unitOfWork.KnowledgeManager.Get(options));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Knowledge model)
-        {
-            try
-            {
-                var entity = await _unitOfWork.KnowledgeManager.CreateAsync(model /*_mapper.ToEntity(model)*/);
-                return Ok(entity);
+                return Ok(_unitOfWork.ApplicationUserManager.Get(options));
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-        [HttpDelete, Route("{id}")]
+
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var deletedEntity = await _unitOfWork.KnowledgeManager.DeleteAsync(id);
+                var deletedEntity = await _unitOfWork.ApplicationUserManager.DeleteAsync(id);
                 return Ok(deletedEntity);
             }
             catch (Exception ex)
@@ -56,12 +47,13 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<Knowledge> jsonPatch)
+        public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<ApplicationUser> jsonPatch)
         {
             try
             {
-                var updatedEntity = await _unitOfWork.KnowledgeManager.UpdateAsync(id, jsonPatch);
+                var updatedEntity = await _unitOfWork.ApplicationUserManager.UpdateAsync(id, jsonPatch);
                 return Ok(updatedEntity);
             }
             catch (Exception ex)
@@ -69,6 +61,7 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
         #endregion
     }
 }

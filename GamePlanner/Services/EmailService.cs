@@ -67,7 +67,7 @@ namespace GamePlanner.Services
             template = ComputeEmailTemplate(
                 template,
                 new Dictionary<string, string>{
-                    { "code", uniqueUrl }
+                    { "url", uniqueUrl }
                 }
             );
 
@@ -104,8 +104,8 @@ namespace GamePlanner.Services
 
         public string GenerateConfirmationLink(int sessionId, string userId, string token)
         {
-            var baseUrl = KeyVaultHelper.GetSecretString("BaseUrl");
-            return $"{baseUrl}api/confirm?sessionId={sessionId}&userId={userId}&token={token}";
+            var emailConfirmUrl = KeyVaultHelper.GetSecretString("EmailConfirmUrl");
+            return $"{emailConfirmUrl}?sessionId={sessionId}&userId={userId}&token={token}";
         }
     }
 }

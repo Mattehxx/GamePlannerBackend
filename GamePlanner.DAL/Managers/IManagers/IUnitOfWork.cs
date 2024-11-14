@@ -5,6 +5,7 @@ namespace GamePlanner.Services
 {
     public interface IUnitOfWork
     {
+        public IApplicationUserManager ApplicationUserManager { get; }
         public IEventManager EventManager { get; }
         public IGameManager GameManager { get; }
         public IKnowledgeManager KnowledgeManager { get; }

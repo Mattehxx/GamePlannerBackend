@@ -30,6 +30,7 @@ builder.Services.AddSingleton<Mapper>();
 
 //OData
 var modelbuilder = new ODataConventionModelBuilder();
+modelbuilder.EntitySet<ApplicationUser>("ApplicationUser");
 modelbuilder.EntitySet<Event>("Event");
 modelbuilder.EntitySet<Game>("Game");
 modelbuilder.EntitySet<Knowledge>("Knowledge");

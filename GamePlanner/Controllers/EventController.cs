@@ -12,15 +12,10 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EventController : ODataController
+    public class EventController(IUnitOfWork unitOfWork, Mapper mapper) : ODataController
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly Mapper _mapper;
-        public EventController(IUnitOfWork unitOfWork, Mapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly Mapper _mapper = mapper;
 
         [HttpGet]
         public IActionResult GetOdata(ODataQueryOptions<Event> oDataQueryOptions)

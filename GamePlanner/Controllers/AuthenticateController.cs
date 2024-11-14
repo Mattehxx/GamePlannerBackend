@@ -33,26 +33,6 @@ namespace Controllers.AuthenticateController
             _emailService = emailService;
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> Test()
-        {
-            ConfirmReservationHelper confirmReservationHelper = new(_emailService);
-            await confirmReservationHelper.SendConfirmationEmailAsync(
-                "teorove04@gmail.com",
-                1,
-                "MyUniqueId",
-                Guid.NewGuid().ToString()
-            );
-            return Ok();
-        }
-
-        [HttpGet("confirm")]
-        public async Task<IActionResult> Confirm(int sessionId, string userId, string token)
-        {
-            return Ok($"SessionId: {sessionId} UserId: {userId} Token: {token}");
-        }
-
-
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
@@ -104,7 +84,9 @@ namespace Controllers.AuthenticateController
                 Surname = model.Surname,
                 BirthDate = model.BirthDate,
                 Level = 0,
-                UserName = model.Email
+                UserName = model.Email,
+                IsDisabled = false,
+                IsDeleted = false
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
@@ -128,7 +110,9 @@ namespace Controllers.AuthenticateController
                 Surname = model.Surname,
                 BirthDate = model.BirthDate,
                 Level = 0,
-                UserName= model.Email
+                UserName = model.Email,
+                IsDisabled = false,
+                IsDeleted = false
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)

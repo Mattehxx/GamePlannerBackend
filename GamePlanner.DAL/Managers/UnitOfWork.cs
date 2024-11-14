@@ -8,6 +8,7 @@ namespace GamePlanner.DAL.Managers
     public class UnitOfWork(GamePlannerDbContext context) : IUnitOfWork
     {
         public readonly GamePlannerDbContext _context = context;
+        public IApplicationUserManager ApplicationUserManager { get; private set; } = new ApplicationUserManager(context);
         public IEventManager EventManager { get; private set; } = new EventManager(context);
         public IGameManager GameManager { get; private set; } = new GameManager(context);
         public IKnowledgeManager KnowledgeManager { get; private set; } = new KnowledgeManager(context);

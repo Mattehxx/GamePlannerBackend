@@ -7,20 +7,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GameController : ControllerBase
+    public class GameController(UnitOfWork unitOfWork, Mapper mapper) : ODataController
     {
-        private readonly UnitOfWork _unitOfWork;
-        private readonly Mapper _mapper;
-        public GameController(UnitOfWork unitOfWork, Mapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+        private readonly UnitOfWork _unitOfWork = unitOfWork;
+        private readonly Mapper _mapper = mapper;
 
         #region CRUD
         [HttpGet]
