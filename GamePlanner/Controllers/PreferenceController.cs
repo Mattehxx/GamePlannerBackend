@@ -1,6 +1,6 @@
 ﻿using GamePlanner.DAL.Data.Entity;
-using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
+using GamePlanner.DTO.InputDTO;
 using GamePlanner.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PreferenceController(UnitOfWork unitOfWork, Mapper mapper) : ODataController
+    public class PreferenceController(IUnitOfWork unitOfWork, Mapper mapper) : ODataController
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly Mapper _mapper = mapper;
@@ -22,6 +22,7 @@ namespace GamePlanner.Controllers
         {
             try
             {
+                if (options == null) return BadRequest("No options found");
                 return Ok(_unitOfWork.PreferenceManager.Get(options));
             }
             catch (Exception ex)
@@ -30,25 +31,25 @@ namespace GamePlanner.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Preference model)
+        public async Task<IActionResult> Create([FromBody] PreferenceInputDTO model)
         {
             try
             {
-                var entity = await _unitOfWork.PreferenceManager.CreateAsync(model /*_mapper.ToEntity(model)*/);
-                return Ok(_mapper.ToModel(entity));
+                if (model == null) return BadRequest("Invalid preference");
+                return Ok(await _unitOfWork.PreferenceManager.CreateAsync(_mapper.ToEntity(model)));
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-        [HttpDelete, Route("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var deletedEntity = await _unitOfWork.PreferenceManager.DeleteAsync(id);
-                return Ok(_mapper.ToModel(deletedEntity));
+                if (id == 0) return BadRequest("Invalid preference");
+                return Ok(await _unitOfWork.PreferenceManager.DeleteAsync(id));
             }
             catch (Exception ex)
             {
@@ -60,8 +61,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var updatedEntity = await _unitOfWork.PreferenceManager.UpdateAsync(id, jsonPatch);
-                return Ok(_mapper.ToModel(updatedEntity));
+                if (jsonPatch == null) return BadRequest("Invalid preference");
+                return Ok(await _unitOfWork.PreferenceManager.UpdateAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {

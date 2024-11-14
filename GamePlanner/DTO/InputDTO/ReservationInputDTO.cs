@@ -9,8 +9,5 @@ namespace GamePlanner.DTO.InputDTO
         public required bool IsConfirmed { get; set; }
         public required bool IsDeleted { get; set; } = false;
         public required string UserId { get; set; }
-        public required int GameSessionId { get; set; }
-        //public required bool IsQueued { get; set; }
-        public required int SessionId { get; set; }
     }
 }

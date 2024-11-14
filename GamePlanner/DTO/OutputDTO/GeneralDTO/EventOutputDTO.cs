@@ -8,7 +8,6 @@ namespace GamePlanner.DTO.OutputDTO.GeneralDTO
         public required string Name { get; set; }
         public required DateTime? EventStartDate { get; set; }
         public required DateTime? EventEndDate { get; set; }
-        //public required int Duration { get; set; }
         public required bool IsPublic { get; set; }
         public required string ImgUrl { get; set; }
         public required bool IsDeleted { get; set; } = false;

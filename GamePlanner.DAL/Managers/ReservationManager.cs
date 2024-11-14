@@ -3,6 +3,8 @@ using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DAL.Managers.IManagers;
 using GamePlanner.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.DAL.Managers
 {
@@ -81,6 +83,10 @@ namespace GamePlanner.DAL.Managers
                 .Where(r => r.SessionId == sessionId && !r.IsDeleted && !r.IsConfirmed && !r.IsNotified)
                 .OrderBy(r => r.ReservationId)
                 .FirstAsync();
+        }
+        public override IQueryable Get(ODataQueryOptions<Reservation> oDataQueryOptions)
+        {
+            return oDataQueryOptions.ApplyTo(_dbSet.Include(r => r.User).Include(r => r.Session));
         }
     }
 }

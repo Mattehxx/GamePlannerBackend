@@ -16,7 +16,7 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReservationController(UserManager<ApplicationUser> userManager, UnitOfWork unitOfWork, 
+    public class ReservationController(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, 
         Mapper mapper, IEmailService emailService) : ODataController
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
@@ -30,6 +30,7 @@ namespace GamePlanner.Controllers
         {
             try
             {
+                if (options == null) return BadRequest("No options found");
                 return Ok(_unitOfWork.ReservationManager.Get(options));
             }
             catch (Exception ex)
@@ -59,7 +60,7 @@ namespace GamePlanner.Controllers
                     }
                 }
 
-                return Ok(_mapper.ToModel(entity));
+                return Ok(entity);
             }
             catch (Exception ex)
             {
@@ -91,8 +92,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var updatedEntity = await _unitOfWork.ReservationManager.UpdateAsync(id, jsonPatch);
-                return Ok(_mapper.ToModel(updatedEntity));
+                if (jsonPatch == null) return BadRequest("Invalid reservation");
+                return Ok(await _unitOfWork.ReservationManager.UpdateAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {

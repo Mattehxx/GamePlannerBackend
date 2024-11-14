@@ -1,5 +1,4 @@
 ﻿using GamePlanner.DAL.Data.Entity;
-using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
 using GamePlanner.Services;
@@ -12,17 +11,19 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GameController(UnitOfWork unitOfWork, Mapper mapper) : ODataController
+    public class GameController(IUnitOfWork unitOfWork, Mapper mapper) : ODataController
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly Mapper _mapper = mapper;
 
         #region CRUD
         [HttpGet]
+        [EnableQuery]
         public IActionResult Get(ODataQueryOptions<Game> options)
         {
             try
             {
+                if (options == null) return BadRequest("No options found");
                 return Ok(_unitOfWork.GameManager.Get(options));
             }
             catch (Exception ex)
@@ -35,8 +36,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var entity = await _unitOfWork.GameManager.CreateAsync(_mapper.ToEntity(model));
-                return Ok(entity);
+                if (model == null) return BadRequest("Invalid game");
+                return Ok(await _unitOfWork.GameManager.CreateAsync(_mapper.ToEntity(model)));
             }catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
@@ -47,8 +48,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var deletedEntity = await _unitOfWork.GameManager.DeleteAsync(id);
-                return Ok(_mapper.ToModel(deletedEntity));
+                if (id == 0) return BadRequest("Invalid game");
+                return Ok(await _unitOfWork.GameManager.DeleteAsync(id));
             }catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
@@ -59,8 +60,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var updatedEntity = await _unitOfWork.GameManager.UpdateAsync(id, jsonPatch);
-                return Ok(_mapper.ToModel(updatedEntity));
+                if (jsonPatch == null) return BadRequest("Invalid game");
+                return Ok(await _unitOfWork.GameManager.UpdateAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {

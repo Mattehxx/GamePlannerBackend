@@ -17,6 +17,7 @@ namespace GamePlanner.Controllers
         private readonly Mapper _mapper = mapper;
 
         [HttpGet]
+        [EnableQuery]
         public IActionResult GetOdata(ODataQueryOptions<Event> oDataQueryOptions)
         {
             try
@@ -36,12 +37,9 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                throw new NotImplementedException();
-                //if (model == null) return BadRequest("Invalid event");
-                //Event entity = _mapper.ToEntity(model);
-                //await _unitOfWork.EventManager.CreateAsync(entity);
-                //return (await _unitOfWork.Commit()).Value ? Ok(_mapper.ToModel(entity)) : BadRequest("Event creation failed");
-            }
+                if (model == null) return BadRequest("Invalid event");
+                return Ok(await _unitOfWork.EventManager.CreateAsync(_mapper.ToEntity(model)));
+             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
@@ -53,9 +51,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                throw new NotImplementedException();
-                //Event updatedEntity = await _unitOfWork.EventManager.UpdateAsync(id, jsonPatch);
-                //return (await _unitOfWork.Commit()).Value ? Ok(updatedEntity) : BadRequest("Event update failed");
+                if (jsonPatch == null) return BadRequest("Invalid event");
+                return Ok(await _unitOfWork.EventManager.UpdateAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {
@@ -68,7 +65,9 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                throw new NotImplementedException();
+                if(id == 0) return BadRequest("Invalid event");
+                return Ok(await _unitOfWork.EventManager.DeleteAsync(id));
+                
             }
             catch (Exception ex)
             {

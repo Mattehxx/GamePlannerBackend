@@ -2,6 +2,7 @@
 using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DAL.Managers;
 using GamePlanner.DAL.Managers.IManagers;
+using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.Managers
@@ -47,6 +48,10 @@ namespace GamePlanner.Managers
             return await _context.SaveChangesAsync() > 0
                 ? entity
                 : throw new InvalidOperationException("Failed to delete entity");
+        }
+        public override IQueryable Get(ODataQueryOptions<Event> oDataQueryOptions)
+        {
+            return oDataQueryOptions.ApplyTo(_dbSet.Include(e => e.AdminUser).Include(e => e.Sessions));
         }
     }
 }
