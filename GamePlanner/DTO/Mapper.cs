@@ -47,6 +47,7 @@ namespace GamePlanner.DTO
             UserId = model.UserId,
             IsDeleted = model.IsDeleted,
             IsConfirmed = model.IsConfirmed,
+            IsNotified = model.IsNotified,
         };
         public Knowledge ToEntity(KnowledgeInputDTO model) => new Knowledge
         {

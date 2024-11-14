@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservation Confirmation</title>
+    <title>Reservation Queued</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -34,19 +34,12 @@
             font-size: 16px;
         }
 
-        .code-box {
+        .status-box {
             text-align: center;
             margin: 20px 0;
-        }
-
-        .confirm-button {
-            display: inline-block;
-            padding: 12px 20px;
-            background-color: #4CAF50;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
+            font-size: 18px;
+            color: #FFA500;
+            font-weight: bold;
         }
 
         .footer {
@@ -61,21 +54,21 @@
 
     <div class="container">
         <div class="header">
-            <h1>Reservation Confirmation</h1>
+            <h1>Your Reservation is in Queue</h1>
         </div>
 
         <p>Hello {{username}},</p>
 
         <p>
-            Thank you for making a reservation. To confirm your reservation, please click the button below.
-            This confirmation link is valid only for one hour, so please confirm as soon as possible.
+            Thank you for your reservation request. Your reservation for {{event}} is currently in a queue and will be processed based on availability.
+            We’ll notify you as soon as your reservation can be confirmed.
         </p>
 
-        <div class="code-box">
-            <a href="{{url}}" class="confirm-button">Confirm Reservation</a>
+        <div class="status-box">
+            Status: Queued
         </div>
 
-        <p>If you did not make this reservation, please ignore this email.</p>
+        <p>If you have any questions about your reservation, please feel free to contact our support team.</p>
 
         <div class="footer">
             <p>This is an automated message; please do not reply.</p>
