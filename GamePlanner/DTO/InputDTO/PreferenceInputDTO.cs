@@ -1,4 +1,7 @@
-﻿namespace GamePlanner.DTO.InputDTO
+﻿using GamePlanner.DAL.Data.Auth;
+using GamePlanner.DAL.Data.Entity;
+
+namespace GamePlanner.DTO.InputDTO
 {
     public class PreferenceInputDTO
     {

@@ -1,5 +1,4 @@
 ﻿using GamePlanner.DAL.Data.Entity;
-using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
 using GamePlanner.Services;

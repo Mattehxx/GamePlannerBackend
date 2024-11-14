@@ -2,8 +2,6 @@
 using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
-using GamePlanner.DTO.OutputDTO;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -49,7 +47,7 @@ namespace GamePlanner.Controllers
             try
             {
                 var deletedEntity = await _unitOfWork.GameManager.DeleteAsync(id);
-                return Ok(deletedEntity);
+                return Ok(_mapper.ToModel(deletedEntity));
             }catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
@@ -61,7 +59,7 @@ namespace GamePlanner.Controllers
             try
             {
                 var updatedEntity = await _unitOfWork.GameManager.UpdateAsync(id, jsonPatch);
-                return Ok(updatedEntity);
+                return Ok(_mapper.ToModel(updatedEntity));
             }
             catch (Exception ex)
             {

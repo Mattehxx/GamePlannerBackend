@@ -1,4 +1,7 @@
-﻿namespace GamePlanner.DTO.OutputDTO.GeneralDTO
+﻿using GamePlanner.DAL.Data.Entity;
+using System.ComponentModel.DataAnnotations;
+
+namespace GamePlanner.DTO.OutputDTO.GeneralDTO
 {
     public class GameOutputDTO
     {

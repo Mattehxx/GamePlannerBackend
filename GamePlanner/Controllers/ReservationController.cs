@@ -1,12 +1,13 @@
-﻿using GamePlanner.DAL.Data.Entity;
+﻿using GamePlanner.DAL.Data.Auth;
+using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
+using GamePlanner.DTO.InputDTO;
+using GamePlanner.Services.IServices;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using GamePlanner.Services.IServices;
-using GamePlanner.DAL.Data.Auth;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace GamePlanner.Controllers
@@ -35,11 +36,11 @@ namespace GamePlanner.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Reservation model)
+        public async Task<IActionResult> Create([FromBody] ReservationInputDTO model)
         {
             try
             {
-                var entity = await _unitOfWork.ReservationManager.CreateAsync(model/*_mapper.ToEntity(model)*/);
+                var entity = await _unitOfWork.ReservationManager.CreateAsync(_mapper.ToEntity(model));
                 
                 var result = await SendConfirmationEmailAsync(entity);
                 if (!result)
@@ -48,7 +49,7 @@ namespace GamePlanner.Controllers
                     return BadRequest("User not found or email not valid");
                 }
 
-                return Ok(entity);
+                return Ok(_mapper.ToModel(entity));
             }
             catch (Exception ex)
             {
@@ -62,7 +63,7 @@ namespace GamePlanner.Controllers
             try
             {
                 var deletedEntity = await _unitOfWork.ReservationManager.DeleteAsync(id);
-                return Ok(deletedEntity);
+                return Ok(_mapper.ToModel(deletedEntity));
             }
             catch (Exception ex)
             {
@@ -76,7 +77,7 @@ namespace GamePlanner.Controllers
             try
             {
                 var updatedEntity = await _unitOfWork.ReservationManager.UpdateAsync(id, jsonPatch);
-                return Ok(updatedEntity);
+                return Ok(_mapper.ToModel(updatedEntity));
             }
             catch (Exception ex)
             {
