@@ -75,7 +75,7 @@ namespace GamePlanner.Controllers
                 ArgumentNullException.ThrowIfNull(id);
                 var deletedEntity = await _unitOfWork.ReservationManager.DeleteAsync(id);
 
-                Reservation reservation = await GetFirstQueuedAsync(deletedEntity.SessionId);
+                Reservation reservation = await _unitOfWork.ReservationManager.GetFirstQueuedAsync(deletedEntity.SessionId);
                 await SendConfirmationEmailAsync(reservation);
 
                 return Ok(_mapper.ToModel(deletedEntity));
@@ -134,9 +134,7 @@ namespace GamePlanner.Controllers
 
             await _emailService.SendConfirmationEmailAsync(user.Email, user.Name, entity.SessionId, user.Id, entity.Token);
             
-            entity.IsNotified = true;
-            _unitOfWork._context.Update(entity);
-            await _unitOfWork._context.SaveChangesAsync();
+            await _unitOfWork.ReservationManager.ConfirmNotificationAsync(entity);
 
             return true;
         }
@@ -155,39 +153,24 @@ namespace GamePlanner.Controllers
         private async Task<bool> SendQueuedEmailAsync(Reservation entity)
         {
             var user = await _userManager.FindByIdAsync(entity.UserId);
-            Session session = await _unitOfWork._context.Sessions
-                .Include(s => s.Event)
-                .Where(s => s.SessionId == entity.SessionId)
-                .SingleAsync();
-            if (session.Event is null) return false; 
-
             if (user is null || user.Email is null) return false;
 
-            await _emailService.SendQueuedEmailAsync(user.Email, user.Name, session.Event.Name);
+            Session session = await _unitOfWork.SessionManager.GetByIdAsync(entity.SessionId);
+            Event currentEvent = await _unitOfWork.EventManager.GetByIdAsync(session.EventId);
+
+            await _emailService.SendQueuedEmailAsync(user.Email, user.Name, currentEvent.Name);
 
             return true;
         }
 
         private async Task<bool> CanBeConfirmedAsync(Reservation entity)
         {
-            var session = await _unitOfWork._context.Sessions.SingleAsync(s => s.SessionId == entity.SessionId);
-            if (session is null) return false;
+            Session session = await _unitOfWork.SessionManager.GetByIdAsync(entity.SessionId);
+            var reservations = await _unitOfWork.ReservationManager.GetConfirmedAsync(entity.SessionId);
 
-            var reservations = await _unitOfWork._context.Reservations
-                .Where(r => r.SessionId == session.SessionId && !r.IsDeleted && r.IsConfirmed)
-                .ToListAsync();
-
-            if (reservations is null || reservations.Count >= session.Seats) return false;
+            if (reservations is null || reservations.Count() >= session.Seats) return false;
             
             return true;
-        }
-
-        private async Task<Reservation> GetFirstQueuedAsync(int sessionId)
-        {
-            return await _unitOfWork._context.Reservations
-                .Where(r => r.SessionId == sessionId && !r.IsDeleted && !r.IsConfirmed && !r.IsNotified)
-                .OrderBy(r => r.ReservationId)
-                .FirstAsync();
         }
 
         #endregion
