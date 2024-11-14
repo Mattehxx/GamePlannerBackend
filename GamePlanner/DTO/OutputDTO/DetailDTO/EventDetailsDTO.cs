@@ -1,4 +1,5 @@
-﻿using GamePlanner.DTO.OutputDTO.GeneralDTO;
+﻿using GamePlanner.DAL.Data.Entity;
+using GamePlanner.DTO.OutputDTO.GeneralDTO;
 
 namespace GamePlanner.DTO.OutputDTO.DetailDTO
 {

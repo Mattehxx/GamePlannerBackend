@@ -140,17 +140,12 @@ namespace Controllers.AuthenticateController
             if (!await _roleManager.RoleExistsAsync(UserRoles.Normal))
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Normal));
 
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Master))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Master));
-
             if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
                 await _userManager.AddToRoleAsync(user, UserRoles.Admin);
 
             if (await _roleManager.RoleExistsAsync(UserRoles.Normal))
                 await _userManager.AddToRoleAsync(user, UserRoles.Normal);
 
-            if (await _roleManager.RoleExistsAsync(UserRoles.Master))
-                await _userManager.AddToRoleAsync(user, UserRoles.Master);
 
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }

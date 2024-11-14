@@ -4,6 +4,7 @@
     {
         public required DateTime StartDate { get; set; }
         public required DateTime EndDate { get; set; }
+        public required int Seats { get; set; }
         public required bool IsDeleted { get; set; } = false;
         public required int TableId { get; set; }
         public required int EventId { get; set; }

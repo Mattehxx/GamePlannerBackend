@@ -17,7 +17,7 @@ namespace GamePlanner.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly Mapper _mapper;
-        public EventController(UnitOfWork unitOfWork, Mapper mapper)
+        public EventController(IUnitOfWork unitOfWork, Mapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

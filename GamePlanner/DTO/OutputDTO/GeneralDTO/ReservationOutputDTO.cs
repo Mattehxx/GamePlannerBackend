@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace GamePlanner.DTO.OutputDTO.GeneralDTO
+﻿namespace GamePlanner.DTO.OutputDTO.GeneralDTO
 {
     public class ReservationOutputDTO
     {
