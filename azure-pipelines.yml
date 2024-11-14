@@ -16,7 +16,7 @@ steps:
     containerRegistry: 'GamePlannerContainerRegistry'
     repository: 'GamePlannerBackend'
     command: 'buildAndPush'
-    Dockerfile: '$(Build.SourceDirectory)/GamePlanner/Dokerfile'
+    Dockerfile: '$(Build.SourcesDirectory)/GamePlanner/Dokerfile'
     buildContext: '$(System.DefaultWorkingDirectory)'
     tags: |
       $(Build.BuildId)
