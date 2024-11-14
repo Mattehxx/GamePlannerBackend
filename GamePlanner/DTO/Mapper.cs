@@ -2,31 +2,23 @@
 using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DTO.InputDTO;
 using GamePlanner.DTO.OutputDTO;
+using GamePlanner.DTO.OutputDTO.DetailDTO;
+using GamePlanner.DTO.OutputDTO.GeneralDTO;
 
 namespace GamePlanner.DTO
 {
     public class Mapper
     {
-        /*
         #region ToEntity
         public Event ToEntity(EventInputDTO model) => new Event
         {
             AdminId = model.AdminId,
             EventId = 0,
-            GameId = model.GameId,
-            RecurrenceId = model.RecurrenceId,
             IsDeleted = model.IsDeleted,
             Description = model.Description,
-            Duration = model.Duration,
-            EventDate = model.EventDate,
-            EventEndDate = model.EventDate.AddDays(model.Duration),
             ImgUrl = model.ImgUrl,
             IsPublic = model.IsPublic,
             Name = model.Name,
-            Game = model.Game != null ? ToEntity(model.Game) : null,
-            Recurrence = model.Recurrence != null ? ToEntity(model.Recurrence) : null,
-            //user
-            GameSessions = model.GameSessions?.ConvertAll(ToEntity)
         };
         public Game ToEntity(GameInputDTO model) => new Game
         {
@@ -37,43 +29,39 @@ namespace GamePlanner.DTO
             ImgUrl = model.ImgUrl,
             Name = model.Name,
         };
-        public Session ToEntity(GameSessionInputDTO model) => new Session
+        public Session ToEntity(SessionInputDTO model) => new Session
         {
-            GameSessionId = 0,
+            SessionId = 0,
             EventId = model.EventId,
             MasterId = model.MasterId,
-            TableId = model.TableId,
-            IsDeleted = model.IsDelete,
-            GameSessionDate = model.GameSessionDate,
-            GameSessionEndTime = model.GameSessionEndTime,
-        };
-        public Recurrence ToEntity(RecurrenceInputDTO model) => new Recurrence
-        {
-            RecurrenceId = 0,
-            Name = model.Name,
-            Events = model.Events?.ConvertAll(ToEntity),
+            IsDeleted = model.IsDeleted,
+            StartDate = model.StartDate,
+            EndDate = model.EndDate,
+            GameId = model.GameId,
+            Seats = model.Seats,
         };
         public Reservation ToEntity(ReservationInputDTO model) => new Reservation
         {
             ReservationId = 0,
-            GameSessionId = model.GameSessionId,
+            SessionId = model.SessionId,
             UserId = model.UserId,
-            IsDeleted = model.IsDelete,
-            Surname = model.Surname,
-            Email = model.Email,
+            IsDeleted = model.IsDeleted,
             IsConfirmed = model.IsConfirmed,
-            IsQueued = model.IsQueued,
-            Name = model.Name,
-            Phone = model.Phone,
-            BirthDate = model.BirthDate,
-            GameSession = model.GameSession != null ? ToEntity(model.GameSession) : null,
         };
-        public Table ToEntity(TableInputDTO model) => new Table
+        public Knowledge ToEntity(KnowledgeInputDTO model) => new Knowledge
         {
-            TableId = 0,
+            KnowledgeId = 0,
             IsDeleted = model.IsDeleted,
             Name = model.Name,
-            Seat = model.Seat,
+        };
+        public Preference ToEntity(PreferenceInputDTO model) => new Preference
+        {
+            PreferenceId = 0,
+            KnowledgeId = model.KnowledgeId,
+            GameId = model.GameId,
+            UserId = model.UserId,
+            IsDeleted = model.IsDeleted,
+            CanBeMaster = model.CanBeMaster,
         };
         #endregion
 
@@ -83,21 +71,14 @@ namespace GamePlanner.DTO
         {
             AdminId = entity.AdminId,
             EventId = 0,
-            GameId = entity.GameId,
-            RecurrenceId = entity.RecurrenceId,
+            //GameId = entity.,
             IsDeleted = entity.IsDeleted,
             Description = entity.Description,
-            Duration = entity.Duration,
-            EventDate = entity.EventDate,
-            EventEndDate = entity.EventDate.AddDays(entity.Duration),
+            EventEndDate = entity.Sessions != null ? entity.Sessions.Max(s=>s.EndDate) : null,
+            EventStartDate = entity.Sessions != null ? entity.Sessions.Min(s=>s.StartDate) : null,
             ImgUrl = entity.ImgUrl,
             IsPublic = entity.IsPublic,
             Name = entity.Name,
-            Game = entity.Game != null ? ToModel(entity.Game) : null,
-            Recurrence = entity.Recurrence != null ? ToModel(entity.Recurrence) : null,
-            //user
-            GameSessions = entity.GameSessions?.ConvertAll(ToModel),
-            User = entity.User != null ? ToModel(entity.User) : null,
         };
         public GameOutputDTO ToModel(Game entity) => new GameOutputDTO
         {
@@ -108,87 +89,115 @@ namespace GamePlanner.DTO
             ImgUrl = entity.ImgUrl,
             Name = entity.Name,
         };
-        public GameSessionOutputDTO ToModel(Session entity) => new GameSessionOutputDTO
+        public SessionOutputDTO ToModel(Session entity) => new SessionOutputDTO
         {
-            GameSessionId = 0,
+            SessionId = entity.SessionId,
+            Seats = entity.Seats,
+            StartDate = entity.StartDate,
+            EndDate = entity.EndDate,
             EventId = entity.EventId,
+            GameId = entity.GameId,
+            IsDeleted = entity.IsDeleted,
             MasterId = entity.MasterId,
-            TableId = entity.TableId,
-            IsDelete = entity.IsDeleted,
-            GameSessionDate = entity.GameSessionDate,
-            GameSessionEndTime = entity.GameSessionEndTime,
-        };
-        public RecurrenceOutputDTO ToModel(Recurrence entity) => new RecurrenceOutputDTO
-        {
-            RecurrenceId = 0,
-            Name = entity.Name,
-            //Events = entity.Events?.ConvertAll(ToModel),
         };
         public ReservationOutputDTO ToModel(Reservation entity) => new ReservationOutputDTO
         {
             ReservationId = entity.ReservationId,
-            GameSessionId = entity.GameSessionId,
-            UserId = entity.UserId,
-            IsDelete = entity.IsDeleted,
-            Surname = entity.Surname,
-            Email = entity.Email,
+            SessionId = entity.SessionId,
             IsConfirmed = entity.IsConfirmed,
-            IsQueued = entity.IsQueued,
-            Name = entity.Name,
-            Phone = entity.Phone,
-            BirthDate = entity.BirthDate,
-            GameSession = entity.GameSession != null ? ToModel(entity.GameSession) : null,
+            IsDelete = entity.IsDeleted,
+            UserId = entity.UserId,
+            Name = entity.User is not null ? entity.User.Name : null,
+            Surname = entity.User is not null ? entity.User.Surname : null,
+            Email = entity.User is not null ? entity.User.Email : null,
         };
-        public TableOutputDTO ToModel(Table entity) => new TableOutputDTO
-        {
-            TableId = 0,
-            IsDeleted = entity.IsDeleted,
-            Name = entity.Name,
-            Seat = entity.Seat,
-        };
-        public ApplicationUserOutputDTO ToModel(ApplicationUser entity) => new ApplicationUserOutputDTO
+        public UserOutputDTO ToModel(ApplicationUser entity) => new UserOutputDTO
         {
             Id = entity.Id,
-            ImgUrl = entity.ImgUrl,
             Name = entity.Name,
             Surname = entity.Surname,
-            BirthDate = entity.BirthDate,
-            CanBeMaster = entity.CanBeMaster,
             Email = entity.Email,
-            Level = entity.Level
+            ImgUrl = entity.ImgUrl,
+            Level = entity.Level,
+            Preferences = entity.Preferences?.ConvertAll(ToModel),
+        };
+        public PreferenceOutputDTO ToModel(Preference entity) => new PreferenceOutputDTO
+        {
+            PreferenceId = entity.PreferenceId,
+            GameId = entity.GameId,
+            KnowledgeId = entity.KnowledgeId,
+            UserId = entity.UserId,
+            IsDeleted = entity.IsDeleted,
+            CanBeMaster = entity.CanBeMaster,
+            GameName = entity.Game is not null ? entity.Game.Name : null,
+            KnowledgeName = entity.Knowledge is not null ? entity.Knowledge.Name : null,
+
+        };
+        public KnowledgeOutputDTO ToModel(Knowledge entity) => new KnowledgeOutputDTO
+        {
+            KnowledgeId = entity.KnowledgeId,
+            IsDeleted = entity.IsDeleted,
+            Name = entity.Name,
         };
         #endregion
 
         #region Detailed model
-        public EventDetailsDTO ToDetailedModel(Event entity) => new EventDetailsDTO
+        public EventDetailsDTO ToDetailedModel(Event entity)
+        {
+            var eventDetails = ToModel(entity);
+            return new EventDetailsDTO
+            {
+                AdminId = eventDetails.AdminId,
+                EventId = eventDetails.EventId,
+                IsDeleted = eventDetails.IsDeleted,
+                IsPublic = eventDetails.IsPublic,
+                Description = eventDetails.Description,
+                ImgUrl = eventDetails.ImgUrl,
+                Name = eventDetails.Name,
+                EventStartDate = eventDetails.EventStartDate,
+                EventEndDate = eventDetails.EventEndDate,
+                SessionsDetails = entity.Sessions?.ConvertAll(ToDetailedModel)
+            };
+        }
+        public SessionDetailsDTO ToDetailedModel(Session entity) => new SessionDetailsDTO
         {
             EventId = entity.EventId,
-            EventDate = entity.EventDate,
-            EventDescription = entity.Description,
-            IsPublic = entity.IsPublic,
-            EventName = entity.Name,
-            GameSessionsDetails = entity.GameSessions?.ConvertAll(ToDetailedModel),
-        };
-        public GameSessionDetailsDTO ToDetailedModel(Session entity) => new GameSessionDetailsDTO
-        {
-            GameSessionId = entity.GameSessionId,
-            EventId = entity.EventId,
+            GameId = entity.GameId,
             MasterId = entity.MasterId,
-            TableId = entity.TableId,
-            IsDelete = entity.IsDeleted,
-            GameSessionDate = entity.GameSessionDate,
-            GameSessionEndTime = entity.GameSessionEndTime,
-            Table = entity.Table != null ? ToModel(entity.Table) : null,
-            TotalSeats = entity.Table != null ? entity.Table.Seat : 0,
-            MasterName = entity.Master != null ? entity.Master.Name : null,
-            QueueLength = entity.Reservations != null ? entity.Reservations.Count(r=>r.IsQueued) : 0,
-            IsReservable = entity.Reservations != null ? entity.Reservations.Count() < entity.Table?.Seat : true,
-            AvailableSeats = entity.Reservations != null && entity.Table != null 
-            ? entity.Table.Seat - entity.Reservations.Count() 
-            : entity.Table != null ? entity.Table.Seat : 0,
+            SessionId = entity.SessionId,
+            IsDeleted = entity.IsDeleted,
+            Seats = entity.Seats,
+            StartDate = entity.StartDate,
+            EndDate = entity.EndDate,
+            Master = entity.Master is not null ? ToModel(entity.Master) : null,
+            TotalSeats = entity.Seats,
+            QueueLength = entity.Reservations?.Count(res=>!res.IsConfirmed) ?? 0,
+            Reservations = entity.Reservations?.ConvertAll(ToModel),
+            AvailableSeats = entity.Seats - (entity.Reservations is not null ? entity.Reservations.Count() : 0),
         };
         #endregion
-        */
-        public Game ToEntity(GameInputDTO model) => throw new NotImplementedException();
+
+
+
+        //prova auto-mapper
+        //private object CopyProperties(object obj)
+        //{
+        //    // Ottieni il tipo della classe sorgente
+        //    var sourceType = obj.GetType();
+        //    var targetType = this.GetType();
+
+        //    // Copia le proprietà pubbliche dalla sorgente al bersaglio
+        //    foreach (var property in sourceType.GetProperties())
+        //    {
+        //        // Controlla se la proprietà esiste anche nella classe di destinazione
+        //        var targetProperty = targetType.GetProperty(property.Name);
+        //        if (targetProperty != null && targetProperty.CanWrite)
+        //        {
+        //            // Imposta il valore della proprietà
+        //            targetProperty.SetValue(this, property.GetValue(obj));
+        //        }
+        //    }
+        //}
+
     }
 }

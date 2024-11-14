@@ -6,14 +6,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using GamePlanner.Services;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PreferenceController : ControllerBase
+    public class PreferenceController : ODataController
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly Mapper _mapper;
         public PreferenceController(UnitOfWork unitOfWork, Mapper mapper)
         {
@@ -40,7 +42,7 @@ namespace GamePlanner.Controllers
             try
             {
                 var entity = await _unitOfWork.PreferenceManager.CreateAsync(model /*_mapper.ToEntity(model)*/);
-                return Ok(entity);
+                return Ok(_mapper.ToModel(entity));
             }
             catch (Exception ex)
             {
@@ -53,7 +55,7 @@ namespace GamePlanner.Controllers
             try
             {
                 var deletedEntity = await _unitOfWork.PreferenceManager.DeleteAsync(id);
-                return Ok(deletedEntity);
+                return Ok(_mapper.ToModel(deletedEntity));
             }
             catch (Exception ex)
             {
@@ -66,7 +68,7 @@ namespace GamePlanner.Controllers
             try
             {
                 var updatedEntity = await _unitOfWork.PreferenceManager.UpdateAsync(id, jsonPatch);
-                return Ok(updatedEntity);
+                return Ok(_mapper.ToModel(updatedEntity));
             }
             catch (Exception ex)
             {

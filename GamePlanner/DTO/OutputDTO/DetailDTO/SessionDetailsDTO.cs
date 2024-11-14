@@ -2,9 +2,8 @@
 
 namespace GamePlanner.DTO.OutputDTO.DetailDTO
 {
-    public class GameSessionDetailsDTO : GameSessionOutputDTO
+    public class SessionDetailsDTO : SessionOutputDTO
     {
-        public string? MasterId { get; set; }
         public required int TotalSeats { get; set; }
         public required int AvailableSeats { get; set; }
         public required int QueueLength { get; set; }
