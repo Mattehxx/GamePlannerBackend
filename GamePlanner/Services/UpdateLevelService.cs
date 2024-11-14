@@ -15,7 +15,7 @@ namespace GamePlanner.Services
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(1000 * 10, cancellationToken);
+                await Task.Delay(1000 * 60, cancellationToken);
 
                 try
                 {
