@@ -14,5 +14,14 @@ namespace GamePlanner.DAL.Managers
                 ? entity
                 : throw new InvalidOperationException("Failed to delete entity");
         }
+
+        public async Task<Game> DisableGame(int gameId ,bool isDisable)
+        {
+            Game entity = await GetByIdAsync(gameId);
+            entity.IsDisabled = isDisable;
+            return await _context.SaveChangesAsync() > 0
+                ? entity
+                : throw new InvalidOperationException("Failed to disable entity");
+        }
     }
 }
