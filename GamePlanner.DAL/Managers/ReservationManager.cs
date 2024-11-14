@@ -1,6 +1,8 @@
 ﻿using GamePlanner.DAL.Data;
 using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DAL.Managers.IManagers;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.DAL.Managers
 {
@@ -36,6 +38,10 @@ namespace GamePlanner.DAL.Managers
             return await _context.SaveChangesAsync() > 0
                 ? entity
                 : throw new InvalidOperationException("Failed to confirm reservation");
+        }
+        public override IQueryable Get(ODataQueryOptions<Reservation> oDataQueryOptions)
+        {
+            return oDataQueryOptions.ApplyTo(_dbSet.Include(r => r.User).Include(r => r.Session));
         }
     }
 }

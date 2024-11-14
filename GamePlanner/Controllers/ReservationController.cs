@@ -3,6 +3,7 @@ using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
+using GamePlanner.Services;
 using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
@@ -14,11 +15,11 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReservationController(UserManager<ApplicationUser> userManager, UnitOfWork unitOfWork, 
+    public class ReservationController(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, 
         Mapper mapper, IEmailService emailService) : ODataController
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
-        private readonly UnitOfWork _unitOfWork = unitOfWork;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly Mapper _mapper = mapper;
         private readonly IEmailService _emailService = emailService;
 
@@ -28,6 +29,7 @@ namespace GamePlanner.Controllers
         {
             try
             {
+                if (options == null) return BadRequest("No options found");
                 return Ok(_unitOfWork.ReservationManager.Get(options));
             }
             catch (Exception ex)
@@ -49,7 +51,7 @@ namespace GamePlanner.Controllers
                     return BadRequest("User not found or email not valid");
                 }
 
-                return Ok(_mapper.ToModel(entity));
+                return Ok(entity);
             }
             catch (Exception ex)
             {
@@ -62,8 +64,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var deletedEntity = await _unitOfWork.ReservationManager.DeleteAsync(id);
-                return Ok(_mapper.ToModel(deletedEntity));
+                if (id == 0) return BadRequest("Invalid reservation");
+                return Ok(await _unitOfWork.ReservationManager.DeleteAsync(id));
             }
             catch (Exception ex)
             {
@@ -76,8 +78,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var updatedEntity = await _unitOfWork.ReservationManager.UpdateAsync(id, jsonPatch);
-                return Ok(_mapper.ToModel(updatedEntity));
+                if (jsonPatch == null) return BadRequest("Invalid reservation");
+                return Ok(await _unitOfWork.ReservationManager.UpdateAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {

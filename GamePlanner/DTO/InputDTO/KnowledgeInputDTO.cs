@@ -7,6 +7,5 @@ namespace GamePlanner.DTO.InputDTO
     {
         [RegularExpression(@"^[A-Za-zÀ-ÖØ-öø-ÿ'\- ]{1,50}$", ErrorMessage = "Name format not valid")]
         public required string Name { get; set; }
-        public required bool IsDeleted { get; set; }
     }
 }

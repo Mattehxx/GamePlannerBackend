@@ -1,6 +1,7 @@
 ﻿using GamePlanner.DAL.Data.Entity;
-using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
+using GamePlanner.DTO.InputDTO;
+using GamePlanner.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -10,9 +11,9 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class KnowledgeController(UnitOfWork unitOfWork, Mapper mapper) : ODataController
+    public class KnowledgeController(IUnitOfWork unitOfWork, Mapper mapper) : ODataController
     {
-        private readonly UnitOfWork _unitOfWork = unitOfWork;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly Mapper _mapper = mapper;
 
         #region CRUD
@@ -21,6 +22,7 @@ namespace GamePlanner.Controllers
         {
             try
             {
+                if (options == null) return BadRequest("No options found");
                 return Ok(_unitOfWork.KnowledgeManager.Get(options));
             }
             catch (Exception ex)
@@ -29,25 +31,26 @@ namespace GamePlanner.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Knowledge model)
+        public async Task<IActionResult> Create([FromBody] KnowledgeInputDTO model)
         {
             try
             {
-                var entity = await _unitOfWork.KnowledgeManager.CreateAsync(model /*_mapper.ToEntity(model)*/);
-                return Ok(_mapper.ToModel(entity));
+                if (model == null) return BadRequest("Invalid knowledge");
+                return Ok(await _unitOfWork.KnowledgeManager.CreateAsync(_mapper.ToEntity(model)));
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-        [HttpDelete, Route("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var deletedEntity = await _unitOfWork.KnowledgeManager.DeleteAsync(id);
-                return Ok(_mapper.ToModel(deletedEntity));
+               if(id == 0) return BadRequest("Invalid knowledge id");
+               return Ok(await _unitOfWork.KnowledgeManager.DeleteAsync(id));
+                
             }
             catch (Exception ex)
             {
@@ -59,8 +62,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var updatedEntity = await _unitOfWork.KnowledgeManager.UpdateAsync(id, jsonPatch);
-                return Ok(_mapper.ToModel(updatedEntity));
+                if(jsonPatch == null) return BadRequest("Invalid knowledge");
+                return Ok(await _unitOfWork.KnowledgeManager.UpdateAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {
