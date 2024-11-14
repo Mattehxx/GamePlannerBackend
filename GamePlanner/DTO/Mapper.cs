@@ -41,8 +41,9 @@ namespace GamePlanner.DTO
             ReservationId = 0,
             SessionId = model.SessionId,
             UserId = model.UserId,
-            IsDeleted = false,
-            IsConfirmed = false,
+            IsDeleted = model.IsDeleted,
+            IsConfirmed = model.IsConfirmed,
+            IsNotified = model.IsNotified,
         };
         public Knowledge ToEntity(KnowledgeInputDTO model) => new Knowledge
         {

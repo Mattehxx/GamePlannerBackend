@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.Controllers
 {
@@ -42,13 +43,21 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var entity = await _unitOfWork.ReservationManager.CreateAsync(_mapper.ToEntity(model));
-                
-                var result = await SendConfirmationEmailAsync(entity);
-                if (!result)
+                Reservation entity = _mapper.ToEntity(model);
+
+                if (!await CanBeConfirmedAsync(entity))
                 {
-                    await _unitOfWork.ReservationManager.DeleteAsync(entity.ReservationId);
-                    return BadRequest("User not found or email not valid");
+                    await SendQueuedEmailAsync(entity);
+                } 
+                else
+                {
+                    entity = await _unitOfWork.ReservationManager.CreateAsync(entity);
+                
+                    if (!await SendConfirmationEmailAsync(entity))
+                    {
+                        await _unitOfWork.ReservationManager.DeleteAsync(entity.ReservationId);
+                        return BadRequest("User not found or email not valid");
+                    }
                 }
 
                 return Ok(entity);
@@ -59,13 +68,18 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                if (id == 0) return BadRequest("Invalid reservation");
-                return Ok(await _unitOfWork.ReservationManager.DeleteAsync(id));
+                ArgumentNullException.ThrowIfNull(id);
+                var deletedEntity = await _unitOfWork.ReservationManager.DeleteAsync(id);
+
+                Reservation reservation = await _unitOfWork.ReservationManager.GetFirstQueuedAsync(deletedEntity.SessionId);
+                await SendConfirmationEmailAsync(reservation);
+
+                return Ok(_mapper.ToModel(deletedEntity));
             }
             catch (Exception ex)
             {
@@ -95,7 +109,12 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                await _unitOfWork.ReservationManager.ConfirmAsync(sessionId, userId, token);
+                Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
+                
+                reservation = await _unitOfWork.ReservationManager.ConfirmAsync(reservation, token);
+                
+                await SendDeleteEmailAsync(reservation);
+                
                 return Ok();
             }
             catch (Exception ex)
@@ -114,8 +133,44 @@ namespace GamePlanner.Controllers
 
             if (user is null || user.Email is null) return false;
 
-            await _emailService.SendConfirmationEmailAsync(user.Email, entity.SessionId, user.Id, entity.Token);
+            await _emailService.SendConfirmationEmailAsync(user.Email, user.Name, entity.SessionId, user.Id, entity.Token);
+            
+            await _unitOfWork.ReservationManager.ConfirmNotificationAsync(entity);
 
+            return true;
+        }
+
+        private async Task<bool> SendDeleteEmailAsync(Reservation entity)
+        {
+            var user = await _userManager.FindByIdAsync(entity.UserId);
+
+            if (user is null || user.Email is null) return false;
+
+            await _emailService.SendDeleteEmailAsync(user.Email, user.Name, entity.ReservationId, entity.Token);
+
+            return true;
+        }
+
+        private async Task<bool> SendQueuedEmailAsync(Reservation entity)
+        {
+            var user = await _userManager.FindByIdAsync(entity.UserId);
+            if (user is null || user.Email is null) return false;
+
+            Session session = await _unitOfWork.SessionManager.GetByIdAsync(entity.SessionId);
+            Event currentEvent = await _unitOfWork.EventManager.GetByIdAsync(session.EventId);
+
+            await _emailService.SendQueuedEmailAsync(user.Email, user.Name, currentEvent.Name);
+
+            return true;
+        }
+
+        private async Task<bool> CanBeConfirmedAsync(Reservation entity)
+        {
+            Session session = await _unitOfWork.SessionManager.GetByIdAsync(entity.SessionId);
+            var reservations = await _unitOfWork.ReservationManager.GetConfirmedAsync(entity.SessionId);
+
+            if (reservations is null || reservations.Count() >= session.Seats) return false;
+            
             return true;
         }
 

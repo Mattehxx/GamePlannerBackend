@@ -1,4 +1,5 @@
-﻿using GamePlanner.DAL.Managers.IManagers;
+﻿using GamePlanner.DAL.Data;
+using GamePlanner.DAL.Managers.IManagers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GamePlanner.Services

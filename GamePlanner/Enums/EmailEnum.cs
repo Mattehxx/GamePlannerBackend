@@ -2,6 +2,8 @@
 {
     public enum EmailTemplateEnum
     {
-        ConfirmReservation
+        ConfirmReservation,
+        DeleteReservation,
+        QueuedReservation
     }
 }
