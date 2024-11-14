@@ -36,6 +36,7 @@ namespace GamePlanner.Controllers
             try
             {
                 if (model == null) return BadRequest("Invalid session");
+                if (model.StartDate.Date != model.EndDate.Date) return BadRequest("start date and end must be in the same day");
                 return Ok(await _unitOfWork.SessionManager.CreateAsync(_mapper.ToEntity(model)));
             }
             catch (Exception ex)
