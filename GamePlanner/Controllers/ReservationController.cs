@@ -3,6 +3,7 @@ using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
+using GamePlanner.Services;
 using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
@@ -18,7 +19,7 @@ namespace GamePlanner.Controllers
         Mapper mapper, IEmailService emailService) : ODataController
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
-        private readonly UnitOfWork _unitOfWork = unitOfWork;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly Mapper _mapper = mapper;
         private readonly IEmailService _emailService = emailService;
 
