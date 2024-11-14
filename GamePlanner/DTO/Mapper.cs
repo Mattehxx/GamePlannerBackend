@@ -12,22 +12,23 @@ namespace GamePlanner.DTO
         #region ToEntity
         public Event ToEntity(EventInputDTO model) => new Event
         {
+            AdminId = model.AdminId,
             EventId = 0,
-            RecurrenceId = model.RecurrenceId,
             IsDeleted = model.IsDeleted,
             Description = model.Description,
             ImgUrl = model.ImgUrl,
+            IsPublic = model.IsPublic,
             Name = model.Name,
-            Name = model.Name,
-            Game = model.Game != null ? ToEntity(model.Game) : null,
-            Recurrence = model.Recurrence != null ? ToEntity(model.Recurrence) : null,
-            //user
-            GameSessions = model.GameSessions?.ConvertAll(ToEntity)
         };
         public Game ToEntity(GameInputDTO model) => new Game
         {
             GameId = 0,
             IsDeleted = model.IsDeleted,
+            IsDisabled = model.IsDisabled,
+            Description = model.Description,
+            ImgUrl = model.ImgUrl,
+            Name = model.Name,
+        };
         public Session ToEntity(SessionInputDTO model) => new Session
         {
             SessionId = 0,
@@ -62,23 +63,23 @@ namespace GamePlanner.DTO
             IsDeleted = model.IsDeleted,
             CanBeMaster = model.CanBeMaster,
         };
-            GameSession = model.GameSession != null ? ToEntity(model.GameSession) : null,
-        };
-        public Table ToEntity(TableInputDTO model) => new Table
+        #endregion
+
+
+        #region ToModel
+        public EventOutputDTO ToModel(Event entity) => new EventOutputDTO
         {
-            TableId = 0,
-            IsDeleted = model.IsDeleted,
             AdminId = entity.AdminId,
             EventId = 0,
             //GameId = entity.,
             IsDeleted = entity.IsDeleted,
             Description = entity.Description,
-            EventEndDate = entity.Sessions != null ? entity.Sessions.Max(s=>s.EndDate) : null,
-            EventStartDate = entity.Sessions != null ? entity.Sessions.Min(s=>s.StartDate) : null,
+            EventEndDate = entity.Sessions != null ? entity.Sessions.Max(s => s.EndDate) : null,
+            EventStartDate = entity.Sessions != null ? entity.Sessions.Min(s => s.StartDate) : null,
             ImgUrl = entity.ImgUrl,
             IsPublic = entity.IsPublic,
             Name = entity.Name,
-            EventId = 0,
+        };
         public GameOutputDTO ToModel(Game entity) => new GameOutputDTO
         {
             GameId = 0,
@@ -138,9 +139,9 @@ namespace GamePlanner.DTO
             IsDeleted = entity.IsDeleted,
             Name = entity.Name,
         };
-            TableId = 0,
-            IsDeleted = entity.IsDeleted,
-            Name = entity.Name,
+        #endregion
+
+        #region Detailed model
         public EventDetailsDTO ToDetailedModel(Event entity)
         {
             var eventDetails = ToModel(entity);
@@ -170,11 +171,11 @@ namespace GamePlanner.DTO
             EndDate = entity.EndDate,
             Master = entity.Master is not null ? ToModel(entity.Master) : null,
             TotalSeats = entity.Seats,
-            QueueLength = entity.Reservations?.Count(res=>!res.IsConfirmed) ?? 0,
+            QueueLength = entity.Reservations?.Count(res => !res.IsConfirmed) ?? 0,
             Reservations = entity.Reservations?.ConvertAll(ToModel),
             AvailableSeats = entity.Seats - (entity.Reservations is not null ? entity.Reservations.Count() : 0),
         };
-            GameSessionId = entity.GameSessionId,
+        #endregion
 
 
 
@@ -198,21 +199,5 @@ namespace GamePlanner.DTO
         //    }
         //}
 
-            TableId = entity.TableId,
-            IsDelete = entity.IsDeleted,
-            GameSessionDate = entity.GameSessionDate,
-            GameSessionEndTime = entity.GameSessionEndTime,
-            Table = entity.Table != null ? ToModel(entity.Table) : null,
-            TotalSeats = entity.Table != null ? entity.Table.Seat : 0,
-            MasterName = entity.Master != null ? entity.Master.Name : null,
-            QueueLength = entity.Reservations != null ? entity.Reservations.Count(r=>r.IsQueued) : 0,
-            IsReservable = entity.Reservations != null ? entity.Reservations.Count() < entity.Table?.Seat : true,
-            AvailableSeats = entity.Reservations != null && entity.Table != null 
-            ? entity.Table.Seat - entity.Reservations.Count() 
-            : entity.Table != null ? entity.Table.Seat : 0,
-        };
-        #endregion
-        */
-        public Game ToEntity(GameInputDTO model) => throw new NotImplementedException();
     }
 }
