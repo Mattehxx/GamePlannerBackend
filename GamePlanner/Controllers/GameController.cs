@@ -2,6 +2,7 @@
 using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
+using GamePlanner.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -13,7 +14,7 @@ namespace GamePlanner.Controllers
     [ApiController]
     public class GameController(UnitOfWork unitOfWork, Mapper mapper) : ODataController
     {
-        private readonly UnitOfWork _unitOfWork = unitOfWork;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly Mapper _mapper = mapper;
 
         #region CRUD
@@ -67,5 +68,18 @@ namespace GamePlanner.Controllers
             }
         }
         #endregion
+
+        [HttpPut,Route("Disable/{id}/{confirm}")]
+        public async Task<IActionResult> Disable(int id,bool confirm)
+        {
+            try
+            {
+                var res = await _unitOfWork.GameManager.DisableGame(id, confirm);
+                return Ok(_mapper.ToModel(res));
+            }catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
     }
 }

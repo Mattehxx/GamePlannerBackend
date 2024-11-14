@@ -1,6 +1,7 @@
 ﻿using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DAL.Managers;
 using GamePlanner.DTO;
+using GamePlanner.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -12,7 +13,7 @@ namespace GamePlanner.Controllers
     [ApiController]
     public class KnowledgeController(UnitOfWork unitOfWork, Mapper mapper) : ODataController
     {
-        private readonly UnitOfWork _unitOfWork = unitOfWork;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly Mapper _mapper = mapper;
 
         #region CRUD
