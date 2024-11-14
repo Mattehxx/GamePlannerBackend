@@ -10,6 +10,5 @@
         public required int EventId { get; set; }
         public required string MasterId { get; set; }
         public required int GameId { get; set; }
-        public required int Seats { get; set; }
     }
 }
