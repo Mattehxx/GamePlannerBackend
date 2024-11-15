@@ -1,9 +1,9 @@
 ﻿using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DTO.InputDTO;
 
-namespace GamePlanner.DTO
+namespace GamePlanner.DTO.Mapper
 {
-    public class Mapper
+    public class Mapper : IMapper
     {
         #region ToEntity
         public Event ToEntity(EventInputDTO model) => new Event
@@ -63,7 +63,7 @@ namespace GamePlanner.DTO
         #endregion
 
 
-       #region ToModel
+        #region ToModel
         //public EventOutputDTO ToModel(Event entity) => new EventOutputDTO
         //{
         //    AdminId = entity.AdminId,
