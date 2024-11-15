@@ -1,6 +1,6 @@
 ﻿using GamePlanner.DAL.Data.Auth;
 using GamePlanner.DAL.Managers;
-using GamePlanner.DTO;
+using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
@@ -13,11 +13,11 @@ namespace GamePlanner.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class ApplicationUserController(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork,
-        Mapper mapper) : ODataController
+        IMapper mapper) : ODataController
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly Mapper _mapper = mapper;
+        private readonly IMapper _mapper = mapper;
 
         #region CRUD
 

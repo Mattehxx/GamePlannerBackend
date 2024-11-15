@@ -110,7 +110,7 @@ namespace GamePlanner.Services
 
         public string GetEmailTemplateName(EmailTemplateEnum template)
         {
-            return $"{nameof(template)}EmailTemplate";
+            return $"{template}EmailTemplate";
         }
 
         public async Task<string> GetEmailTemplateAsync(string templateName)

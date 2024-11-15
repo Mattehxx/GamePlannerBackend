@@ -1,6 +1,6 @@
 ﻿using GamePlanner.DAL.Data.Entity;
-using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
+using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +11,10 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PreferenceController(IUnitOfWork unitOfWork, Mapper mapper) : ODataController
+    public class PreferenceController(IUnitOfWork unitOfWork, IMapper mapper) : ODataController
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly Mapper _mapper = mapper;
+        private readonly IMapper _mapper = mapper;
 
         #region CRUD
         [HttpGet]

@@ -1,10 +1,10 @@
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using GamePlanner.DAL.Data;
 using GamePlanner.DAL.Data.Auth;
-using GamePlanner.DTO.ConfigurationDTO;
-using GamePlanner.Helpers;
+using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DAL.Managers;
+using GamePlanner.DTO.ConfigurationDTO;
+using GamePlanner.DTO.Mapper;
+using GamePlanner.Helpers;
 using GamePlanner.Services;
 using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,9 +15,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using GamePlanner.DAL.Managers.IManagers;
-using GamePlanner.DTO;
-using GamePlanner.DAL.Data.Entity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +23,7 @@ builder.Services.AddHostedService<UpdateLevelService>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IBlobService, BlobService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddSingleton<Mapper>();
+builder.Services.AddSingleton<IMapper, Mapper>();
 
 //OData
 var modelbuilder = new ODataConventionModelBuilder();

@@ -1,8 +1,6 @@
 ﻿using GamePlanner.DAL.Data;
 using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DAL.Managers.IManagers;
-using GamePlanner.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 
@@ -87,6 +85,13 @@ namespace GamePlanner.DAL.Managers
         public override IQueryable Get(ODataQueryOptions<Reservation> oDataQueryOptions)
         {
             return oDataQueryOptions.ApplyTo(_dbSet.Include(r => r.User).Include(r => r.Session));
+        }
+
+        public override Task<Reservation> CreateAsync(Reservation entity)
+        {
+            var existing = _dbSet.Where(r => r.SessionId == entity.SessionId && r.UserId == entity.UserId).FirstOrDefault();
+            if (existing != null) throw new InvalidOperationException("Reservation already exists");
+            return base.CreateAsync(entity);
         }
     }
 }

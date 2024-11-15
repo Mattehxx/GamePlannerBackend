@@ -1,8 +1,7 @@
 ﻿using GamePlanner.DAL.Data.Auth;
 using GamePlanner.DAL.Data.Entity;
-using GamePlanner.DAL.Managers;
-using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
+using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
 using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Identity;
@@ -10,18 +9,17 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class ReservationController(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, 
-        Mapper mapper, IEmailService emailService) : ODataController
+        IMapper mapper, IEmailService emailService) : ODataController
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly Mapper _mapper = mapper;
+        private readonly IMapper _mapper = mapper;
         private readonly IEmailService _emailService = emailService;
 
         #region CRUD

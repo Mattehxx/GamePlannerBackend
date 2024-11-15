@@ -1,6 +1,6 @@
 ﻿using GamePlanner.DAL.Data.Entity;
-using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
+using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +11,10 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GameController(IUnitOfWork unitOfWork, Mapper mapper) : ODataController
+    public class GameController(IUnitOfWork unitOfWork, IMapper mapper) : ODataController
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly Mapper _mapper = mapper;
+        private readonly IMapper _mapper = mapper;
 
         #region CRUD
         [HttpGet]
@@ -70,8 +70,8 @@ namespace GamePlanner.Controllers
         }
         #endregion
 
-        [HttpPut("Disable/{id}/{confirm}")]
-        public async Task<IActionResult> Disable(int id,bool confirm)
+        [HttpPut("DisableOrEnable/{id}")]
+        public async Task<IActionResult> DisableOrEnable(int id)
         {
             try
             {
