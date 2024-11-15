@@ -21,7 +21,7 @@ namespace GamePlanner.DAL.Managers
             return oDataQueryOptions.ApplyTo(_dbSet);
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T> GetByIdAsync(int id)
         {
             return await _dbSet.FindAsync(id)
                 ?? throw new InvalidOperationException("Entity not found");

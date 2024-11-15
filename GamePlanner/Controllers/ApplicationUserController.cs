@@ -63,5 +63,20 @@ namespace GamePlanner.Controllers
         }
 
         #endregion
+
+        [HttpPut("DisableOrEnable/{id}")]
+        public async Task<IActionResult> DisableOrEnable(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id) || Guid.TryParse(id, out Guid res))
+                    return BadRequest("invalid id format");
+                return Ok(await _unitOfWork.ApplicationUserManager.DisableOrEnableUser(id));
+            }
+            catch(Exception ex) 
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
     }
 }
