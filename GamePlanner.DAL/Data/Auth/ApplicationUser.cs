@@ -13,6 +13,8 @@ namespace GamePlanner.DAL.Data.Auth
         public required DateTime BirthDate { get; set; }
         public string? ImgUrl { get; set; }
         public required int Level { get; set; }
+        public required bool IsDisabled { get; set; } = false;
+        public required bool IsDeleted { get; set; } = false;
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
         public List<Event>? AdminEvents { get; set; }

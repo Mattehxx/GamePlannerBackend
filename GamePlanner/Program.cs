@@ -1,10 +1,10 @@
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using GamePlanner.DAL.Data;
 using GamePlanner.DAL.Data.Auth;
-using GamePlanner.DTO.ConfigurationDTO;
-using GamePlanner.Helpers;
+using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DAL.Managers;
+using GamePlanner.DTO.ConfigurationDTO;
+using GamePlanner.DTO.Mapper;
+using GamePlanner.Helpers;
 using GamePlanner.Services;
 using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,21 +15,20 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using GamePlanner.DAL.Managers.IManagers;
-using GamePlanner.DTO;
-using GamePlanner.DAL.Data.Entity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Custom services
-builder.Services.AddHostedService<UpdateLevelService>();
+builder.Services.AddHostedService<UpdateLevelBackgroundService>();
+builder.Services.AddHostedService<ReservationTokenBackgroundService>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IBlobService, BlobService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddSingleton<Mapper>();
+builder.Services.AddSingleton<IMapper, Mapper>(); 
 
 //OData
 var modelbuilder = new ODataConventionModelBuilder();
+modelbuilder.EntitySet<ApplicationUser>("ApplicationUser");
 modelbuilder.EntitySet<Event>("Event");
 modelbuilder.EntitySet<Game>("Game");
 modelbuilder.EntitySet<Knowledge>("Knowledge");
@@ -118,6 +117,17 @@ builder.Services.AddSwaggerGen(option =>
             }
         }
     );
+});
+
+string myCorsKey = "MyAllowSpecificOrigins";
+
+builder.Services.AddCors(o => {
+    o.AddPolicy(myCorsKey, b => {
+        b.WithOrigins(KeyVaultHelper.GetSecretString(myCorsKey))
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
+    });
 });
 
 var app = builder.Build();

@@ -59,28 +59,58 @@ namespace GamePlanner.Services
             return _smtpClient.SendMailAsync(mailMessage);
         }
 
-        public async Task SendConfirmationEmailAsync(string receiver, int sessionId, string userId, string token)
+        public async Task SendConfirmationEmailAsync(string receiver, string name, int sessionId, string userId, string token)
         {
             var uniqueUrl = GenerateConfirmationLink(sessionId, userId, token);
             var templateName = GetEmailTemplateName(EmailTemplateEnum.ConfirmReservation);
             var template = await GetEmailTemplateAsync(templateName);
             template = ComputeEmailTemplate(
                 template,
-                new Dictionary<string, string>{
-                    { "code", uniqueUrl }
+                new Dictionary<string, string>
+                {
+                    { "username", name },
+                    { "url", uniqueUrl }
                 }
             );
 
             await SendEmailAsync(receiver, "Confirm reservation", template);
         }
 
+        public async Task SendDeleteEmailAsync(string receiver, string name, int reservationId, string token)
+        {
+            var uniqueUrl = GenerateDeleteLink(reservationId, token);
+            var templateName = GetEmailTemplateName(EmailTemplateEnum.DeleteReservation);
+            var template = await GetEmailTemplateAsync(templateName);
+            template = ComputeEmailTemplate(
+                template,
+                new Dictionary<string, string>
+                {
+                    { "username", name },
+                    { "url", uniqueUrl }
+                }
+            );
+            await SendEmailAsync(receiver, "Delete reservation", template);
+        }
+
+        public async Task SendQueuedEmailAsync(string receiver, string name, string eventName)
+        {
+            var templateName = GetEmailTemplateName(EmailTemplateEnum.QueuedReservation);
+            var template = await GetEmailTemplateAsync(templateName);
+            template = ComputeEmailTemplate(
+                template,
+                new Dictionary<string, string>
+                {
+                    { "username", name },
+                    { "event", eventName }
+                }
+            );
+
+            await SendEmailAsync(receiver, "Queued reservation", template);
+        }
+
         public string GetEmailTemplateName(EmailTemplateEnum template)
         {
-            return template switch
-            {
-                EmailTemplateEnum.ConfirmReservation => "ConfirmReservationEmailTemplate",
-                _ => throw new ArgumentOutOfRangeException(nameof(template), template, null),
-            };
+            return $"{template}EmailTemplate";
         }
 
         public async Task<string> GetEmailTemplateAsync(string templateName)
@@ -104,8 +134,14 @@ namespace GamePlanner.Services
 
         public string GenerateConfirmationLink(int sessionId, string userId, string token)
         {
-            var baseUrl = KeyVaultHelper.GetSecretString("BaseUrl");
-            return $"{baseUrl}api/confirm?sessionId={sessionId}&userId={userId}&token={token}";
+            var emailConfirmUrl = KeyVaultHelper.GetSecretString("EmailConfirmUrl");
+            return $"{emailConfirmUrl}?sessionId={sessionId}&userId={userId}&token={token}";
+        }
+
+        public string GenerateDeleteLink(int reservationId, string token)
+        {
+            var emailDeleteUrl = KeyVaultHelper.GetSecretString("EmailDeleteUrl");
+            return $"{emailDeleteUrl}?reservationId={reservationId}&token={token}";
         }
     }
 }

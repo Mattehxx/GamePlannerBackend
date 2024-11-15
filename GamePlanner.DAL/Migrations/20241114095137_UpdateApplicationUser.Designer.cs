@@ -4,6 +4,7 @@ using GamePlanner.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamePlanner.DAL.Migrations
 {
     [DbContext(typeof(GamePlannerDbContext))]
-    partial class GamePlannerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241114095137_UpdateApplicationUser")]
+    partial class UpdateApplicationUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,18 +259,12 @@ namespace GamePlanner.DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsNotified")
-                        .HasColumnType("bit");
-
                     b.Property<int>("SessionId")
                         .HasColumnType("int");
 
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("TokenCreateDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()

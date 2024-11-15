@@ -5,6 +5,7 @@ namespace GamePlanner.DAL.Managers.IManagers
 {
     public interface IManager<T> where T : class
     {
+        public IQueryable<T> GetAll();
         public IQueryable Get(ODataQueryOptions<T> oDataQueryOptions);
         public Task<T> GetByIdAsync(int id);
         public Task<T> CreateAsync(T entity);

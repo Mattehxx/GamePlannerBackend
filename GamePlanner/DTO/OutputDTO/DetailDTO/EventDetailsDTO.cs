@@ -5,7 +5,8 @@ namespace GamePlanner.DTO.OutputDTO.DetailDTO
 {
     public class EventDetailsDTO : EventOutputDTO
     {
-        public required string Description { get; set; }
-        //public List<Session>? Sessions { get; set; }
+        //public required string EventDescription { get; set; }
+        public int AvailableTables { get { return SessionsDetails != null ? SessionsDetails.Count() : 0; } }
+        public List<SessionDetailsDTO>? SessionsDetails { get; set; }
     }
 }

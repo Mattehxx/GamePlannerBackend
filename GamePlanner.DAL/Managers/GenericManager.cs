@@ -16,12 +16,17 @@ namespace GamePlanner.DAL.Managers
             _dbSet = _context.Set<T>();
         }
 
-        public IQueryable Get(ODataQueryOptions<T> oDataQueryOptions)
+        public virtual IQueryable<T> GetAll()
+        {
+            return _dbSet;
+        }
+
+        public virtual IQueryable Get(ODataQueryOptions<T> oDataQueryOptions)
         {
             return oDataQueryOptions.ApplyTo(_dbSet);
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T> GetByIdAsync(int id)
         {
             return await _dbSet.FindAsync(id)
                 ?? throw new InvalidOperationException("Entity not found");

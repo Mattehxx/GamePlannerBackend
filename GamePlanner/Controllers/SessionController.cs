@@ -1,25 +1,20 @@
 ﻿using GamePlanner.DAL.Data.Entity;
-using GamePlanner.DAL.Managers;
 using GamePlanner.DTO.InputDTO;
-using GamePlanner.DTO;
-using Microsoft.AspNetCore.Http;
+using GamePlanner.DTO.Mapper;
+using GamePlanner.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SessionController : ControllerBase
+    public class SessionController(IUnitOfWork unitOfWork, IMapper mapper) : ODataController
     {
-        private readonly UnitOfWork _unitOfWork;
-        private readonly Mapper _mapper;
-        public SessionController(UnitOfWork unitOfWork, Mapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
 
         #region CRUD
         [HttpGet]
@@ -27,6 +22,7 @@ namespace GamePlanner.Controllers
         {
             try
             {
+                if (options == null) return BadRequest("No options found");
                 return Ok(_unitOfWork.SessionManager.Get(options));
             }
             catch (Exception ex)
@@ -35,25 +31,26 @@ namespace GamePlanner.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Session model)
+        public async Task<IActionResult> Create([FromBody] SessionInputDTO model)
         {
             try
             {
-                var entity = await _unitOfWork.SessionManager.CreateAsync(model/*_mapper.ToEntity(model)*/);
-                return Ok(entity);
+                if (model == null) return BadRequest("Invalid session");
+                if (model.StartDate.Date != model.EndDate.Date) return BadRequest("start date and end must be in the same day");
+                return Ok(await _unitOfWork.SessionManager.CreateAsync(_mapper.ToEntity(model)));
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-        [HttpDelete, Route("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var deletedEntity = await _unitOfWork.SessionManager.DeleteAsync(id);
-                return Ok(deletedEntity);
+                if (id == 0) return BadRequest("Invalid session");
+                return Ok(await _unitOfWork.SessionManager.DeleteAsync(id));
             }
             catch (Exception ex)
             {
@@ -65,8 +62,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var updatedEntity = await _unitOfWork.SessionManager.UpdateAsync(id, jsonPatch);
-                return Ok(updatedEntity);
+                if (id == 0) return BadRequest("Invalid session");
+                return Ok(await _unitOfWork.SessionManager.UpdateAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {

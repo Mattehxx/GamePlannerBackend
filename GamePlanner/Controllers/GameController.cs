@@ -1,26 +1,20 @@
 ﻿using GamePlanner.DAL.Data.Entity;
-using GamePlanner.DAL.Managers;
-using GamePlanner.DTO;
 using GamePlanner.DTO.InputDTO;
-using GamePlanner.DTO.OutputDTO;
-using Microsoft.AspNetCore.Http;
+using GamePlanner.DTO.Mapper;
+using GamePlanner.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GameController : ControllerBase
+    public class GameController(IUnitOfWork unitOfWork, IMapper mapper) : ODataController
     {
-        private readonly UnitOfWork _unitOfWork;
-        private readonly Mapper _mapper;
-        public GameController(UnitOfWork unitOfWork, Mapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
 
         #region CRUD
         [HttpGet]
@@ -28,6 +22,7 @@ namespace GamePlanner.Controllers
         {
             try
             {
+                if (options == null) return BadRequest("No options found");
                 return Ok(_unitOfWork.GameManager.Get(options));
             }
             catch (Exception ex)
@@ -40,8 +35,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var entity = await _unitOfWork.GameManager.CreateAsync(_mapper.ToEntity(model));
-                return Ok(entity);
+                if (model == null) return BadRequest("Invalid game");
+                return Ok(await _unitOfWork.GameManager.CreateAsync(_mapper.ToEntity(model)));
             }catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
@@ -52,8 +47,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var deletedEntity = await _unitOfWork.GameManager.DeleteAsync(id);
-                return Ok(deletedEntity);
+                if (id == 0) return BadRequest("Invalid game");
+                return Ok(await _unitOfWork.GameManager.DeleteAsync(id));
             }catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
@@ -64,8 +59,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var updatedEntity = await _unitOfWork.GameManager.UpdateAsync(id, jsonPatch);
-                return Ok(updatedEntity);
+                if (jsonPatch == null) return BadRequest("Invalid game");
+                return Ok(await _unitOfWork.GameManager.UpdateAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {
@@ -73,5 +68,18 @@ namespace GamePlanner.Controllers
             }
         }
         #endregion
+
+        [HttpPut("DisableOrEnable/{id}")]
+        public async Task<IActionResult> DisableOrEnable(int id)
+        {
+            try
+            {
+                if (id == 0) return BadRequest("Invalid game");
+                return Ok(await _unitOfWork.GameManager.DisableOrEnableGame(id));
+            }catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
     }
 }

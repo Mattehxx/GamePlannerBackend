@@ -29,11 +29,24 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+    <PackageReference Include="System.Formats.Asn1" Version="9.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GamePlanner.DAL\GamePlanner.DAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Templates\ConfirmReservationEmailTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\DeleteReservationEmailTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\QueuedReservationEmailTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
