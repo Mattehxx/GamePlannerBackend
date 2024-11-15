@@ -36,7 +36,7 @@ namespace GamePlanner.Controllers
             try
             {
                 if (model == null) return BadRequest("Invalid game");
-                return Ok(await _unitOfWork.GameManager.CreateAsync(await _mapper.ToEntity(model)));
+                return Ok(await _unitOfWork.GameManager.CreateAsync(_mapper.ToEntity(model)));
             }catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);

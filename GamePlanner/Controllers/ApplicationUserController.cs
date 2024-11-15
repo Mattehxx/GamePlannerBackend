@@ -78,6 +78,13 @@ namespace GamePlanner.Controllers
         }
 
         [HttpGet("download-apk")]
-        public IActionResult DownloadApk() => Redirect("https://raw.githubusercontent.com/TuoUsername/TuoRepository/main/yourfile.apk");
-    }
+        public IActionResult DownloadApk()
+        {
+            //var client = new System.Net.Http.HttpClient();
+            //var fileBytes = client.GetByteArrayAsync("https://github.com/GabryTm047/download-APK-PW1-2anno-_ITS/raw/refs/heads/main/app-release.apk").Result; 
+            //return File(fileBytes, "application/vnd.android.package-archive", "GamePlanner.apk");
+
+            return Ok("https://github.com/GabryTm047/download-APK-PW1-2anno-_ITS/raw/refs/heads/main/app-release.apk");
+        }
+        }
 }
