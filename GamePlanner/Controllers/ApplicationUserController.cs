@@ -76,5 +76,8 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        [HttpGet("download-apk")]
+        public IActionResult DownloadApk() => Redirect("https://raw.githubusercontent.com/TuoUsername/TuoRepository/main/yourfile.apk");
     }
 }

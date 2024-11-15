@@ -40,7 +40,7 @@ namespace GamePlanner.Controllers
             try
             {
                 if (model == null) return BadRequest("Invalid event");
-                return Ok(await _unitOfWork.EventManager.CreateAsync(_mapper.ToEntity(model)));
+                return Ok(await _unitOfWork.EventManager.CreateAsync(await _mapper.ToEntity(model)));
              }
             catch (Exception ex)
             {

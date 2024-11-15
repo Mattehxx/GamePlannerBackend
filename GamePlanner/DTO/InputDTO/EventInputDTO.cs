@@ -8,7 +8,7 @@ namespace GamePlanner.DTO.InputDTO
         public required string Name { get; set; }
         public required string Description { get; set; }
         public required int Duration { get; set; }
-        public required string ImgUrl { get; set; }
+        public required IFormFile ImgUrl { get; set; }
         public required string AdminId { get; set; }
         public required bool IsPublic { get; set; }
     }

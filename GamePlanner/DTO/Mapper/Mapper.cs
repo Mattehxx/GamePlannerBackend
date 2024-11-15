@@ -1,29 +1,34 @@
 ﻿using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DTO.InputDTO;
+using GamePlanner.Services.IServices;
 
 namespace GamePlanner.DTO.Mapper
 {
     public class Mapper : IMapper
     {
+        private readonly IBlobService _blobService;
+
+        Mapper(IBlobService blobService) => _blobService = blobService;
+
         #region ToEntity
-        public Event ToEntity(EventInputDTO model) => new Event
+        public async Task<Event> ToEntity(EventInputDTO model)  =>  new Event
         {
             EventId = 0,
             AdminId = model.AdminId,
             IsDeleted = false,
             Description = model.Description,
-            ImgUrl = model.ImgUrl,
+            ImgUrl = await _blobService.UploadFileAsync(_blobService.GetBlobContainerClient("event-container"),model.ImgUrl),
             IsPublic = model.IsPublic,
             Name = model.Name,
             
         };
-        public Game ToEntity(GameInputDTO model) => new Game
+        public async Task<Game> ToEntity(GameInputDTO model) => new Game
         {
             GameId = 0,
             IsDeleted = false,
             IsDisabled = false,
             Description = model.Description,
-            ImgUrl = model.ImgUrl,
+            ImgUrl = await _blobService.UploadFileAsync(_blobService.GetBlobContainerClient("game-container"), model.ImgUrl),
             Name = model.Name,
         };
         public Session ToEntity(SessionInputDTO model) => new Session
