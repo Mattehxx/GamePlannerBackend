@@ -121,12 +121,20 @@ builder.Services.AddSwaggerGen(option =>
 
 string myCorsKey = "MyAllowSpecificOrigins";
 
+//builder.Services.AddCors(o => {
+//    o.AddPolicy(myCorsKey, b => {
+//        b.WithOrigins(KeyVaultHelper.GetSecretString(myCorsKey))
+//        .AllowAnyMethod()
+//        .AllowAnyHeader()
+//        .AllowCredentials();
+//    });
+//});
 builder.Services.AddCors(o => {
     o.AddPolicy(myCorsKey, b => {
-        b.WithOrigins(KeyVaultHelper.GetSecretString(myCorsKey))
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-        .AllowCredentials();
+        b.AllowAnyMethod()
+         .AllowAnyHeader()
+         .AllowCredentials();
+
     });
 });
 
