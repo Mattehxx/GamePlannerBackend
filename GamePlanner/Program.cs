@@ -118,6 +118,17 @@ builder.Services.AddSwaggerGen(option =>
     );
 });
 
+string myCorsKey = "MyAllowSpecificOrigins";
+
+builder.Services.AddCors(o => {
+    o.AddPolicy(myCorsKey, b => {
+        b.WithOrigins(KeyVaultHelper.GetSecretString(myCorsKey))
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
