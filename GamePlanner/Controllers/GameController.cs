@@ -70,13 +70,13 @@ namespace GamePlanner.Controllers
         }
         #endregion
 
-        [HttpPut,Route("Disable/{id}/{confirm}")]
+        [HttpPut("Disable/{id}/{confirm}")]
         public async Task<IActionResult> Disable(int id,bool confirm)
         {
             try
             {
-                var res = await _unitOfWork.GameManager.DisableGame(id, confirm);
-                return Ok(_mapper.ToModel(res));
+                if (id == 0) return BadRequest("Invalid game");
+                return Ok(await _unitOfWork.GameManager.DisableOrEnableGame(id));
             }catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);

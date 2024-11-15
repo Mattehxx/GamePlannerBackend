@@ -79,7 +79,7 @@ namespace GamePlanner.Controllers
                 Reservation reservation = await _unitOfWork.ReservationManager.GetFirstQueuedAsync(deletedEntity.SessionId);
                 await SendConfirmationEmailAsync(reservation);
 
-                return Ok(_mapper.ToModel(deletedEntity));
+                return Ok(deletedEntity);
             }
             catch (Exception ex)
             {

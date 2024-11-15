@@ -41,9 +41,9 @@ namespace GamePlanner.DTO
             ReservationId = 0,
             SessionId = model.SessionId,
             UserId = model.UserId,
-            IsDeleted = model.IsDeleted,
-            IsConfirmed = model.IsConfirmed,
-            IsNotified = model.IsNotified,
+            IsDeleted = false,
+            IsConfirmed = false,
+            IsNotified = false,
         };
         public Knowledge ToEntity(KnowledgeInputDTO model) => new Knowledge
         {
@@ -63,7 +63,7 @@ namespace GamePlanner.DTO
         #endregion
 
 
-        //#region ToModel
+       #region ToModel
         //public EventOutputDTO ToModel(Event entity) => new EventOutputDTO
         //{
         //    AdminId = entity.AdminId,
@@ -172,6 +172,6 @@ namespace GamePlanner.DTO
         //    Reservations = entity.Reservations?.ConvertAll(ToModel),
         //    AvailableSeats = entity.Seats - (entity.Reservations is not null ? entity.Reservations.Count() : 0),
         //};
-        //#endregion
+        #endregion
     }
 }
