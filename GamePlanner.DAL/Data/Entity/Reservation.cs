@@ -6,6 +6,7 @@ namespace GamePlanner.DAL.Data.Entity
     {
         public required int ReservationId { get; set; }
         public string Token { get; set; } = Guid.NewGuid().ToString();
+        public DateTime TokenCreateDate { get; set; } = DateTime.Now;
         public required bool IsConfirmed { get; set; }
         public required bool IsNotified { get; set; } = false;
         public required bool IsDeleted { get; set; } = false;
