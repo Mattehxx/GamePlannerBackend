@@ -17,8 +17,7 @@ namespace GamePlanner.Controllers
         private readonly IMapper _mapper = mapper;
 
         [HttpGet]
-        [EnableQuery]
-        public IActionResult GetOdata(ODataQueryOptions<Event> oDataQueryOptions)
+        public IActionResult Get(ODataQueryOptions<Event> oDataQueryOptions)
         {
             try
             {

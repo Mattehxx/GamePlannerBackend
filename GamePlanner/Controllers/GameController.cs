@@ -18,7 +18,6 @@ namespace GamePlanner.Controllers
 
         #region CRUD
         [HttpGet]
-        [EnableQuery]
         public IActionResult Get(ODataQueryOptions<Game> options)
         {
             try

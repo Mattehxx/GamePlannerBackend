@@ -65,7 +65,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("mupltiple")]
         public async Task<IActionResult> MultipleCreate([FromBody] List<ReservationInputDTO> models)
         {
             try
