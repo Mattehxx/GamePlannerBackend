@@ -1,5 +1,4 @@
 ﻿using GamePlanner.DAL.Data.Auth;
-using GamePlanner.DAL.Managers;
 using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
 using Microsoft.AspNetCore.Identity;
@@ -26,7 +25,7 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                return Ok(_unitOfWork.ApplicationUserManager.Get(options));
+                return options == null ? BadRequest("No options found") : Ok(_unitOfWork.ApplicationUserManager.Get(options));
             }
             catch (Exception ex)
             {
@@ -39,8 +38,7 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var deletedEntity = await _unitOfWork.ApplicationUserManager.DeleteAsync(id);
-                return Ok(deletedEntity);
+                return id == 0 ? BadRequest("Invalid user id") : Ok(await _unitOfWork.ApplicationUserManager.DeleteAsync(id)); 
             }
             catch (Exception ex)
             {
@@ -53,8 +51,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                var updatedEntity = await _unitOfWork.ApplicationUserManager.UpdateAsync(id, jsonPatch);
-                return Ok(updatedEntity);
+                return jsonPatch == null ? BadRequest("Invalid user") :Ok(await _unitOfWork.ApplicationUserManager.UpdateAsync(id, jsonPatch));
+
             }
             catch (Exception ex)
             {

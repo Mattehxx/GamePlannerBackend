@@ -13,8 +13,9 @@ namespace GamePlanner.DTO.Mapper
             IsDeleted = false,
             Description = model.Description,
             ImgUrl = model.ImgUrl,
-            IsPublic = false,
+            IsPublic = model.IsPublic,
             Name = model.Name,
+            
         };
         public Game ToEntity(GameInputDTO model) => new Game
         {

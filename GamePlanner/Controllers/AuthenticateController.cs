@@ -1,8 +1,6 @@
 ﻿using GamePlanner.DAL.Data.Auth;
 using GamePlanner.DTO.ConfigurationDTO;
-using GamePlanner.Enums;
 using GamePlanner.Helpers;
-using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +10,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Controllers.AuthenticateController
+namespace GamePlanner.Controllers
 {
     [Route("/api")]
     [ApiController]
@@ -21,16 +19,13 @@ namespace Controllers.AuthenticateController
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWTSettingsDTO _JWTSettings;
-        private readonly IEmailService _emailService;
-        
-        public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            IEmailService emailService)
+
+        public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _JWTSettings = KeyVaultHelper.GetSecret<JWTSettingsDTO>("JWTSettings")
                 ?? throw new InvalidOperationException(nameof(_JWTSettings));
-            _emailService = emailService;
         }
 
         [HttpPost("login")]
@@ -41,11 +36,11 @@ namespace Controllers.AuthenticateController
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
 
-                var authClaims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                };
+                List<Claim> authClaims =
+                [
+                    new(ClaimTypes.Name, user.UserName),
+                    new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                ];
 
                 foreach (var userRole in userRoles)
                 {
@@ -137,28 +132,20 @@ namespace Controllers.AuthenticateController
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
         {
-            if (tokenModel is null)
-            {
-                return BadRequest("Invalid client request");
-            }
+            if (tokenModel is null) return BadRequest("Invalid client request");
 
             string? accessToken = tokenModel.AccessToken;
             string? refreshToken = tokenModel.RefreshToken;
 
             var principal = GetPrincipalFromExpiredToken(accessToken);
-            if (principal == null)
-            {
-                return BadRequest("Invalid access token or refresh token");
-            }
+            if (principal == null) return BadRequest("Invalid access token or refresh token");
 
             string username = principal.Identity.Name;
 
             var user = await _userManager.FindByNameAsync(username);
 
             if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
-            {
                 return BadRequest("Invalid access token or refresh token");
-            }
 
             var newAccessToken = CreateToken(principal.Claims.ToList());
             var newRefreshToken = GenerateRefreshToken();

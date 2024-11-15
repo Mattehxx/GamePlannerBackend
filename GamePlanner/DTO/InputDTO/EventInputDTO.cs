@@ -1,6 +1,4 @@
-﻿using GamePlanner.DAL.Data.Auth;
-using GamePlanner.DAL.Data.Entity;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace GamePlanner.DTO.InputDTO
 {
@@ -12,5 +10,6 @@ namespace GamePlanner.DTO.InputDTO
         public required int Duration { get; set; }
         public required string ImgUrl { get; set; }
         public required string AdminId { get; set; }
+        public required bool IsPublic { get; set; }
     }
 }
