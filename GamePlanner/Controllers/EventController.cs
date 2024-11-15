@@ -80,7 +80,9 @@ namespace GamePlanner.Controllers
             }
         }
 
-        public async Task NotifyUsers(int id, JsonPatchDocument<Event> jsonPatch)
+        #region Utility
+
+        private async Task NotifyUsers(int id, JsonPatchDocument<Event> jsonPatch)
         {
             var modifiedFields = jsonPatch.Operations
                     .Where(op => op.path == "/isPublic" && op.from == "false" && op.value.ToString() == "true")
@@ -118,5 +120,7 @@ namespace GamePlanner.Controllers
                 }
             }
         }
+
+        #endregion
     }
 }

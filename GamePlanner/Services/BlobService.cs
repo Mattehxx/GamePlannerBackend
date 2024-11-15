@@ -22,6 +22,19 @@ namespace GamePlanner.Services
             return new BlobContainerClient(connectionString, containerName);
         }
 
+        public string UploadFile(BlobContainerClient containerClient, IFormFile file)
+        {
+            containerClient.CreateIfNotExists();
+
+            var blobName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+            using var stream = file.OpenReadStream();
+            blobClient.Upload(stream);
+
+            return blobClient.Uri.AbsoluteUri;
+        }
+
         public async Task<string> UploadFileAsync(BlobContainerClient containerClient, IFormFile file)
         {
             await containerClient.CreateIfNotExistsAsync();
@@ -30,9 +43,23 @@ namespace GamePlanner.Services
             BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
             using var stream = file.OpenReadStream();
-            await blobClient.UploadAsync(stream);
+            var response = await blobClient.UploadAsync(stream);
 
-            return blobName;
+            return blobClient.Uri.AbsoluteUri;
+        }
+
+        public byte[] DownloadBlobToStream(BlobContainerClient containerClient, string fileName)
+        {
+            BlobClient blobClient = containerClient.GetBlobClient(fileName);
+
+            if (blobClient.Exists())
+            {
+                using var memoryStream = new MemoryStream();
+                blobClient.DownloadTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+
+            throw new FileNotFoundException("File not found in blob storage.");
         }
 
         public async Task<byte[]> DownloadBlobToStreamAsync(BlobContainerClient containerClient, string fileName)
