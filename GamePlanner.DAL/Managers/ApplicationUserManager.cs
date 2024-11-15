@@ -2,6 +2,7 @@
 using GamePlanner.DAL.Managers.IManagers;
 using GamePlanner.DAL.Data.Auth;
 using GamePlanner.DAL.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.DAL.Managers
 {
@@ -14,6 +15,20 @@ namespace GamePlanner.DAL.Managers
             return await _context.SaveChangesAsync() > 0
                 ? entity
                 : throw new InvalidOperationException("Failed to delete entity");
+        }
+        public async Task<ApplicationUser> GetByIdAsync(string id)
+        {
+            return await _dbSet.SingleOrDefaultAsync(user=>user.Id == id) 
+                ?? throw new InvalidOperationException("user not found");
+        }
+
+        public async Task<ApplicationUser> DisableOrEnableUser(string userId)
+        {
+            ApplicationUser entity = await GetByIdAsync(userId);
+            entity.IsDisabled = !entity.IsDisabled;
+            return await _context.SaveChangesAsync() > 0
+                ? entity
+                : throw new InvalidOperationException("Failed to disable entity");
         }
     }
 }
