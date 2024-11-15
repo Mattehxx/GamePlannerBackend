@@ -29,7 +29,7 @@ namespace GamePlanner.Services
             var blobName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
-            await using var stream = file.OpenReadStream();
+            using var stream = file.OpenReadStream();
             await blobClient.UploadAsync(stream);
 
             return blobName;
