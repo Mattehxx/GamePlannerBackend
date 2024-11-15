@@ -16,6 +16,11 @@ namespace GamePlanner.DAL.Managers
             _dbSet = _context.Set<T>();
         }
 
+        public virtual IQueryable<T> GetAll()
+        {
+            return _dbSet;
+        }
+
         public virtual IQueryable Get(ODataQueryOptions<T> oDataQueryOptions)
         {
             return oDataQueryOptions.ApplyTo(_dbSet);

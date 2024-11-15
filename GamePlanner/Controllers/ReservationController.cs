@@ -73,9 +73,17 @@ namespace GamePlanner.Controllers
                 List<Reservation> entities = models.ConvertAll(_mapper.ToEntity);
                 List<Reservation> createdEntities = [];
 
+                Session session = await _unitOfWork.SessionManager.GetByIdAsync(models[0].SessionId);
+                Event currentEvent = await _unitOfWork.EventManager.GetByIdAsync(session.EventId);
+
                 foreach (Reservation entity in entities)
                 {
                     await _unitOfWork.ReservationManager.CreateAsync(entity);
+
+                    if (!currentEvent.IsPublic)
+                    {
+                        continue;
+                    }
 
                     if (!await CanBeConfirmedAsync(entity))
                     {

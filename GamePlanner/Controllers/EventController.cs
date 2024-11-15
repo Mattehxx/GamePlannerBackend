@@ -2,19 +2,22 @@
 using GamePlanner.DTO.InputDTO;
 using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
+using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EventController(IUnitOfWork unitOfWork, IMapper mapper) : ODataController
+    public class EventController(IUnitOfWork unitOfWork, IMapper mapper, IEmailService emailService) : ODataController
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
+        private readonly IEmailService _emailService = emailService;
 
         [HttpGet]
         public IActionResult Get(ODataQueryOptions<Event> oDataQueryOptions)
@@ -51,6 +54,9 @@ namespace GamePlanner.Controllers
             try
             {
                 if (jsonPatch == null) return BadRequest("Invalid event");
+
+                await NotifyUsers(id, jsonPatch);
+
                 return Ok(await _unitOfWork.EventManager.UpdateAsync(id, jsonPatch));
             }
             catch (Exception ex)
@@ -71,6 +77,45 @@ namespace GamePlanner.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task NotifyUsers(int id, JsonPatchDocument<Event> jsonPatch)
+        {
+            var modifiedFields = jsonPatch.Operations
+                    .Where(op => op.path == "/isPublic" && op.from == "false" && op.value.ToString() == "true")
+                    .FirstOrDefault();
+
+            if (modifiedFields is not null)
+            {
+                var sessions = _unitOfWork.SessionManager.GetAll()
+                    .Where(s => s.EventId == id && !s.IsDeleted)
+                    .ToList();
+
+                foreach (var session in sessions)
+                {
+                    var reservations = _unitOfWork.ReservationManager.GetAll()
+                        .Include(r => r.User)
+                        .Where(r => r.SessionId == session.SessionId
+                        && !r.IsDeleted
+                        && !r.IsNotified
+                        && !r.IsConfirmed)
+                        .ToList();
+
+                    foreach (var reservation in reservations)
+                    {
+                        if (reservation.User is not null)
+                        {
+                            await _emailService.SendConfirmationEmailAsync(
+                                reservation.User.Email!,
+                                reservation.User.Name,
+                                session.SessionId,
+                                reservation.UserId,
+                                reservation.Token
+                            );
+                        }
+                    }
+                }
             }
         }
     }
