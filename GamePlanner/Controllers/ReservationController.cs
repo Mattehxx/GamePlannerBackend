@@ -14,7 +14,7 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReservationController(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, 
+    public class ReservationController(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork,
         IMapper mapper, IEmailService emailService) : ODataController
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
@@ -36,21 +36,20 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ReservationInputDTO model)
         {
             try
             {
-                Reservation entity = _mapper.ToEntity(model);
+                Reservation entity = await _unitOfWork.ReservationManager.CreateAsync(_mapper.ToEntity(model));
 
                 if (!await CanBeConfirmedAsync(entity))
                 {
                     await SendQueuedEmailAsync(entity);
-                } 
+                }
                 else
                 {
-                    entity = await _unitOfWork.ReservationManager.CreateAsync(entity);
-                
                     if (!await SendConfirmationEmailAsync(entity))
                     {
                         await _unitOfWork.ReservationManager.DeleteAsync(entity.ReservationId);
@@ -59,6 +58,42 @@ namespace GamePlanner.Controllers
                 }
 
                 return Ok(entity);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MultipleCreate([FromBody] List<ReservationInputDTO> models)
+        {
+            try
+            {
+                List<Reservation> entities = models.ConvertAll(_mapper.ToEntity);
+                List<Reservation> createdEntities = [];
+
+                foreach (Reservation entity in entities)
+                {
+
+                    if (!await CanBeConfirmedAsync(entity))
+                    {
+                        await SendQueuedEmailAsync(entity);
+                    }
+                    else
+                    {
+                        if (!await SendConfirmationEmailAsync(entity))
+                        {
+                            await _unitOfWork.ReservationManager.DeleteAsync(entity.ReservationId);
+                        }
+                        else
+                        {
+                            createdEntities.Add(entity);
+                        }
+                    }
+                }
+
+                return Ok(createdEntities);
             }
             catch (Exception ex)
             {
@@ -108,11 +143,11 @@ namespace GamePlanner.Controllers
             try
             {
                 Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
-                
+
                 reservation = await _unitOfWork.ReservationManager.ConfirmAsync(reservation, token);
-                
+
                 await SendDeleteEmailAsync(reservation);
-                
+
                 return Ok();
             }
             catch (Exception ex)
@@ -132,7 +167,7 @@ namespace GamePlanner.Controllers
             if (user is null || user.Email is null) return false;
 
             await _emailService.SendConfirmationEmailAsync(user.Email, user.Name, entity.SessionId, user.Id, entity.Token);
-            
+
             await _unitOfWork.ReservationManager.ConfirmNotificationAsync(entity);
 
             return true;
@@ -168,7 +203,7 @@ namespace GamePlanner.Controllers
             var reservations = await _unitOfWork.ReservationManager.GetConfirmedAsync(entity.SessionId);
 
             if (reservations is null || reservations.Count() >= session.Seats) return false;
-            
+
             return true;
         }
 
