@@ -75,6 +75,7 @@ namespace GamePlanner.Controllers
 
                 foreach (Reservation entity in entities)
                 {
+                    await _unitOfWork.ReservationManager.CreateAsync(entity);
 
                     if (!await CanBeConfirmedAsync(entity))
                     {
