@@ -20,5 +20,11 @@ namespace GamePlanner.DAL.Managers
         {
             return oDataQueryOptions.ApplyTo(_dbSet.Include(s => s.Reservations).Include(s => s.Event).Include(s => s.Master).Include(s => s.Game));
         }
+
+        public IQueryable<Session> GetUpcomingSessions()
+        {
+            return _dbSet.Include(s=>s.Master).Include(s=>s.Event).OrderBy(s => s.StartDate).Take(10)
+                ?? throw new Exception("no sessions found");
+        }
     }
 }
