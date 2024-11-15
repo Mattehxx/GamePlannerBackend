@@ -1,7 +1,5 @@
 ﻿using GamePlanner.DAL.Data;
-using GamePlanner.DAL.Data.Entity;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
 
 namespace GamePlanner.Services
 {

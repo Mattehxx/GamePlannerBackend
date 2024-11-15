@@ -89,7 +89,7 @@ namespace GamePlanner.DAL.Managers
 
         public override Task<Reservation> CreateAsync(Reservation entity)
         {
-            var existing = _dbSet.Where(r => r.SessionId == entity.SessionId && r.UserId == entity.UserId).FirstOrDefault();
+            var existing = _dbSet.Where(r => r.SessionId == entity.SessionId && r.UserId == entity.UserId && !r.IsDeleted).FirstOrDefault();
             if (existing != null) throw new InvalidOperationException("Reservation already exists");
             return base.CreateAsync(entity);
         }
