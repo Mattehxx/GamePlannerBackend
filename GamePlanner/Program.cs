@@ -19,7 +19,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 //Custom services
-builder.Services.AddHostedService<UpdateLevelService>();
+builder.Services.AddHostedService<UpdateLevelBackgroundService>();
+builder.Services.AddHostedService<ReservationTokenBackgroundService>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IBlobService, BlobService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
