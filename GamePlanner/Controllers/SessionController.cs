@@ -78,7 +78,7 @@ namespace GamePlanner.Controllers
         /// DA RIFARE CON MODELLI
         /// </summary>
         /// <returns></returns>
-        [NonAction]
+        //[NonAction]
         [HttpGet, Route("upcoming")]
         public async Task<IActionResult> GetUpcomingSessions()  //da rifare con mapper e dto
         {
@@ -86,22 +86,22 @@ namespace GamePlanner.Controllers
             {
                 var sessions = _unitOfWork.SessionManager.GetUpcomingSessions();
                 if (sessions == null) return BadRequest();
-                if (await sessions.AllAsync(s => s.Master != null && s.Event != null && s.Game != null))
+                if (await sessions.AllAsync(s => s.Event != null && s.Game != null))
                 {
                     return Ok(await sessions.Select(s => new
                     {
                         s.SessionId,
-                        Master = new
+                        Master = s.Master != null ? new
                         {
                             s.MasterId,
-                            s.Master!.Name, //controllo nell'if
+                            s.Master.Name, 
                             s.Master.Surname,
                             s.Master.Email,
                             s.Master.ImgUrl,
-                        },
+                        } : null,
                         Event = new
                         {
-                            s.Event!.EventId,
+                            s.Event!.EventId,   //controllo nell'if
                             s.Event.Name,
                             s.Event.Description,
                         },
