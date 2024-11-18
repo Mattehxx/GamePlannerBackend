@@ -165,6 +165,22 @@ namespace GamePlanner.Controllers
             }
         }
 
+        [HttpPost("new-confirm-email")]
+        public async Task<IActionResult> SendNewConfirmationEmail(int sessionId, string userId)
+        {
+            try
+            {
+                Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
+                if (reservation is null) return BadRequest("Reservation not found");
+                await SendConfirmationEmailAsync(reservation);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         #endregion
 
         #region Utility
