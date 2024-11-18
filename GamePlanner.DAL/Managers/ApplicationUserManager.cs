@@ -3,6 +3,7 @@ using GamePlanner.DAL.Managers.IManagers;
 using GamePlanner.DAL.Data.Auth;
 using GamePlanner.DAL.Data.Entity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace GamePlanner.DAL.Managers
 {
@@ -29,6 +30,11 @@ namespace GamePlanner.DAL.Managers
             return await _context.SaveChangesAsync() > 0
                 ? entity
                 : throw new InvalidOperationException("Failed to disable entity");
+        }
+        
+        public override IQueryable Get(ODataQueryOptions<ApplicationUser> oDataQueryOptions)
+        {
+            return oDataQueryOptions.ApplyTo(_dbSet.Include(u => u.Preferences).Include(u => u.AdminEvents).Include(u => u.Reservations));
         }
     }
 }
