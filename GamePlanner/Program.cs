@@ -129,15 +129,16 @@ string myCorsKey = "MyAllowSpecificOrigins";
 //        .AllowCredentials();
 //    });
 //});
-builder.Services.AddCors(o => {
-    o.AddPolicy(myCorsKey, b => {
-        b.AllowAnyMethod()
-         .AllowAnyHeader()
-         .AllowCredentials();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()  // Permetti richieste da qualsiasi origine
+              .AllowAnyMethod()  // Permetti qualsiasi tipo di metodo HTTP (GET, POST, PUT, DELETE, ecc.)
+              .AllowAnyHeader(); // Permetti qualsiasi intestazione
     });
 });
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -146,7 +147,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

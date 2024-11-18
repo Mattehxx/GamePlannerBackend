@@ -58,7 +58,8 @@ namespace GamePlanner.Controllers
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(token),
                     RefreshToken = refreshToken,
-                    Expiration = token.ValidTo
+                    Expiration = token.ValidTo,
+                    userId = user.Id,
                 });
             }
             return Unauthorized();
