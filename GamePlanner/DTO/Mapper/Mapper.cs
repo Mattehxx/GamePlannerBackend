@@ -16,7 +16,7 @@ namespace GamePlanner.DTO.Mapper
             AdminId = model.AdminId,
             IsDeleted = false,
             Description = model.Description,
-            ImgUrl = _blobService.UploadFile(_blobService.GetBlobContainerClient("event-container"),model.ImgUrl),
+            ImgUrl = _blobService.UploadFile(_blobService.GetBlobContainerClient("event-container"),model.Image),
             IsPublic = model.IsPublic,
             Name = model.Name,
             

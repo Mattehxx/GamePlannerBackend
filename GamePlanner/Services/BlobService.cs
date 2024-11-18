@@ -24,7 +24,7 @@ namespace GamePlanner.Services
 
         public string UploadFile(BlobContainerClient containerClient, IFormFile file)
         {
-            containerClient.CreateIfNotExists();
+            containerClient.CreateIfNotExists(Azure.Storage.Blobs.Models.PublicAccessType.BlobContainer);
 
             var blobName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             BlobClient blobClient = containerClient.GetBlobClient(blobName);
@@ -37,7 +37,7 @@ namespace GamePlanner.Services
 
         public async Task<string> UploadFileAsync(BlobContainerClient containerClient, IFormFile file)
         {
-            await containerClient.CreateIfNotExistsAsync();
+            await containerClient.CreateIfNotExistsAsync(Azure.Storage.Blobs.Models.PublicAccessType.BlobContainer);
 
             var blobName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             BlobClient blobClient = containerClient.GetBlobClient(blobName);

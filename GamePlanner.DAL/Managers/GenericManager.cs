@@ -39,7 +39,14 @@ namespace GamePlanner.DAL.Managers
                 : throw new InvalidOperationException("Failed to create entity");
         }
 
-        public async Task<T> UpdateAsync(int id, JsonPatchDocument<T> patchDocument)
+        public virtual async Task<T> UpdateAsync(T entity)
+        {
+            _dbSet.Update(entity);
+            return await _context.SaveChangesAsync() > 0 ? entity
+                : throw new InvalidOperationException("Failed to update entity");
+        }
+
+        public async Task<T> PatchAsync(int id, JsonPatchDocument<T> patchDocument)
         {
             var entity = await _dbSet.FindAsync(id) 
                 ?? throw new InvalidOperationException("Entity not found");

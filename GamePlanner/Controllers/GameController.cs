@@ -2,6 +2,7 @@
 using GamePlanner.DTO.InputDTO;
 using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
+using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -11,12 +12,14 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GameController(IUnitOfWork unitOfWork, IMapper mapper) : ODataController
+    public class GameController(IUnitOfWork unitOfWork, IMapper mapper, IBlobService blobService) : ODataController
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
+        private readonly IBlobService _blobService = blobService;
 
         #region CRUD
+
         [HttpGet]
         public IActionResult Get(ODataQueryOptions<Game> options)
         {
@@ -42,6 +45,7 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
         [HttpDelete,Route("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -54,20 +58,42 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<Game> jsonPatch)
         {
             try
             {
                 if (jsonPatch == null) return BadRequest("Invalid game");
-                return Ok(await _unitOfWork.GameManager.UpdateAsync(id, jsonPatch));
+                return Ok(await _unitOfWork.GameManager.PatchAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
         #endregion
+
+        [HttpPut("image/{id}")]
+        public async Task<IActionResult> UpdateImage(int id, IFormFile file)
+        {
+            try
+            {
+                var game = await _unitOfWork.GameManager.GetByIdAsync(id);
+                if (game == null) return BadRequest("User not found");
+
+                var containerClient = _blobService.GetBlobContainerClient("game-container");
+                var imageUrl = await _blobService.UploadFileAsync(containerClient, file);
+                game.ImgUrl = imageUrl;
+
+                return Ok(await _unitOfWork.GameManager.UpdateAsync(game));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
 
         [HttpPut("DisableOrEnable/{id}")]
         public async Task<IActionResult> DisableOrEnable(int id)

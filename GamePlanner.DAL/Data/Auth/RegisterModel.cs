@@ -10,8 +10,6 @@ namespace GamePlanner.DAL.Data.Auth
         public required string Email { get; set; }
         public required string Phone { get; set; }
         public required DateTime BirthDate { get; set; }
-        public string? ImgUrl { get; set; }
         public required string Password { get; set; }
-        public required bool CanBeMaster { get; set; }
     }
 }
