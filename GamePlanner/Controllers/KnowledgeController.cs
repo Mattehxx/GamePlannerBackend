@@ -63,7 +63,7 @@ namespace GamePlanner.Controllers
             try
             {
                 if(jsonPatch == null) return BadRequest("Invalid knowledge");
-                return Ok(await _unitOfWork.KnowledgeManager.UpdateAsync(id, jsonPatch));
+                return Ok(await _unitOfWork.KnowledgeManager.PatchAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {

@@ -46,7 +46,7 @@ namespace GamePlanner.Controllers
 
                 if (!await CanBeConfirmedAsync(entity))
                 {
-                    await SendQueuedEmailAsync(entity);
+                    _ = SendQueuedEmailAsync(entity);
                 }
                 else
                 {
@@ -87,7 +87,7 @@ namespace GamePlanner.Controllers
 
                     if (!await CanBeConfirmedAsync(entity))
                     {
-                        await SendQueuedEmailAsync(entity);
+                        _ = SendQueuedEmailAsync(entity);
                     }
                     else
                     {
@@ -135,7 +135,7 @@ namespace GamePlanner.Controllers
             try
             {
                 if (jsonPatch == null) return BadRequest("Invalid reservation");
-                return Ok(await _unitOfWork.ReservationManager.UpdateAsync(id, jsonPatch));
+                return Ok(await _unitOfWork.ReservationManager.PatchAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {
@@ -152,11 +152,37 @@ namespace GamePlanner.Controllers
             try
             {
                 Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
+                if (reservation.IsConfirmed) return BadRequest("Reservation already confirmed");
+
+                if (!await CanBeConfirmedAsync(reservation))
+                {
+                    _ = SendQueuedEmailAsync(reservation);
+                    return BadRequest("Session full");
+                }
 
                 reservation = await _unitOfWork.ReservationManager.ConfirmAsync(reservation, token);
+                _ = SendDeleteEmailAsync(reservation);
 
-                await SendDeleteEmailAsync(reservation);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
 
+        [HttpPost("new-confirm-email")]
+        public async Task<IActionResult> SendNewConfirmationEmail(int sessionId, string userId)
+        {
+            try
+            {
+                Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
+                if (!reservation.IsNotified) return BadRequest("Reservation not alredy notified");
+
+                if (!await SendConfirmationEmailAsync(reservation))
+                {
+                    return BadRequest("Cannot send confirmation email");
+                }
                 return Ok();
             }
             catch (Exception ex)
