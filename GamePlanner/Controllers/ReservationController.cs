@@ -46,7 +46,7 @@ namespace GamePlanner.Controllers
 
                 if (!await CanBeConfirmedAsync(entity))
                 {
-                    await SendQueuedEmailAsync(entity);
+                    _ = SendQueuedEmailAsync(entity);
                 }
                 else
                 {
@@ -87,7 +87,7 @@ namespace GamePlanner.Controllers
 
                     if (!await CanBeConfirmedAsync(entity))
                     {
-                        await SendQueuedEmailAsync(entity);
+                        _ = SendQueuedEmailAsync(entity);
                     }
                     else
                     {
@@ -152,10 +152,16 @@ namespace GamePlanner.Controllers
             try
             {
                 Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
+                if (reservation.IsConfirmed) return BadRequest("Reservation already confirmed");
+
+                if (!await CanBeConfirmedAsync(reservation))
+                {
+                    _ = SendQueuedEmailAsync(reservation);
+                    return BadRequest("Session full");
+                }
 
                 reservation = await _unitOfWork.ReservationManager.ConfirmAsync(reservation, token);
-
-                await SendDeleteEmailAsync(reservation);
+                _ = SendDeleteEmailAsync(reservation);
 
                 return Ok();
             }
@@ -171,8 +177,12 @@ namespace GamePlanner.Controllers
             try
             {
                 Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
-                if (reservation is null) return BadRequest("Reservation not found");
-                await SendConfirmationEmailAsync(reservation);
+                if (!reservation.IsNotified) return BadRequest("Reservation not alredy notified");
+
+                if (!await SendConfirmationEmailAsync(reservation))
+                {
+                    return BadRequest("Cannot send confirmation email");
+                }
                 return Ok();
             }
             catch (Exception ex)
