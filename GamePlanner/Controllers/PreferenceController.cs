@@ -62,7 +62,7 @@ namespace GamePlanner.Controllers
             try
             {
                 if (jsonPatch == null) return BadRequest("Invalid preference");
-                return Ok(await _unitOfWork.PreferenceManager.UpdateAsync(id, jsonPatch));
+                return Ok(await _unitOfWork.PreferenceManager.PatchAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {

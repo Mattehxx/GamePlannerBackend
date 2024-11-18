@@ -13,11 +13,15 @@ namespace GamePlanner.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EventController(IUnitOfWork unitOfWork, IMapper mapper, IEmailService emailService) : ODataController
+    public class EventController(IUnitOfWork unitOfWork, IMapper mapper, IEmailService emailService,
+        IBlobService blobService) : ODataController
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
         private readonly IEmailService _emailService = emailService;
+        private readonly IBlobService _blobService = blobService;
+
+        #region CRUD
 
         [HttpGet]
         public IActionResult Get(ODataQueryOptions<Event> oDataQueryOptions)
@@ -35,7 +39,7 @@ namespace GamePlanner.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(EventInputDTO model)
+        public async Task<IActionResult> Create([FromForm] EventInputDTO model)
         {
             try
             {
@@ -57,7 +61,7 @@ namespace GamePlanner.Controllers
 
                 await NotifyUsers(id, jsonPatch);
 
-                return Ok(await _unitOfWork.EventManager.UpdateAsync(id, jsonPatch));
+                return Ok(await _unitOfWork.EventManager.PatchAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {
@@ -73,6 +77,28 @@ namespace GamePlanner.Controllers
                 if(id == 0) return BadRequest("Invalid event");
                 return Ok(await _unitOfWork.EventManager.DeleteAsync(id));
                 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        #endregion
+
+        [HttpPut("image/{id}")]
+        public async Task<IActionResult> UpdateImage(int id, IFormFile file)
+        {
+            try
+            {
+                var currentEvent = await _unitOfWork.EventManager.GetByIdAsync(id);
+                if (currentEvent == null) return BadRequest("User not found");
+
+                var containerClient = _blobService.GetBlobContainerClient("event-container");
+                var imageUrl = await _blobService.UploadFileAsync(containerClient, file);
+                currentEvent.ImgUrl = imageUrl;
+
+                return Ok(await _unitOfWork.EventManager.UpdateAsync(currentEvent));
             }
             catch (Exception ex)
             {

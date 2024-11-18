@@ -135,7 +135,7 @@ namespace GamePlanner.Controllers
             try
             {
                 if (jsonPatch == null) return BadRequest("Invalid reservation");
-                return Ok(await _unitOfWork.ReservationManager.UpdateAsync(id, jsonPatch));
+                return Ok(await _unitOfWork.ReservationManager.PatchAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {
