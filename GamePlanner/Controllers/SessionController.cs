@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.Controllers
 {
@@ -63,7 +64,7 @@ namespace GamePlanner.Controllers
             try
             {
                 if (id == 0) return BadRequest("Invalid session");
-                return Ok(await _unitOfWork.SessionManager.UpdateAsync(id, jsonPatch));
+                return Ok(await _unitOfWork.SessionManager.PatchAsync(id, jsonPatch));
             }
             catch (Exception ex)
             {
