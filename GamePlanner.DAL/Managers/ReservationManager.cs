@@ -75,12 +75,12 @@ namespace GamePlanner.DAL.Managers
                 .ToListAsync();
         }
 
-        public async Task<Reservation> GetFirstQueuedAsync(int sessionId)
+        public async Task<Reservation?> GetFirstQueuedAsync(int sessionId)
         {
             return await _context.Reservations
                 .Where(r => r.SessionId == sessionId && !r.IsDeleted && !r.IsConfirmed && !r.IsNotified)
                 .OrderBy(r => r.ReservationId)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
         }
         public override IQueryable Get(ODataQueryOptions<Reservation> oDataQueryOptions)
         {

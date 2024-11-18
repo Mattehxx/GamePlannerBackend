@@ -42,6 +42,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
+                ArgumentNullException.ThrowIfNull(model);
+
                 Reservation entity = await _unitOfWork.ReservationManager.CreateAsync(_mapper.ToEntity(model));
 
                 if (!await CanBeConfirmedAsync(entity))
@@ -70,6 +72,8 @@ namespace GamePlanner.Controllers
         {
             try
             {
+                ArgumentNullException.ThrowIfNull(models);
+
                 List<Reservation> entities = models.ConvertAll(_mapper.ToEntity);
                 List<Reservation> createdEntities = [];
 
@@ -111,15 +115,23 @@ namespace GamePlanner.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, string token)
         {
             try
             {
                 ArgumentNullException.ThrowIfNull(id);
+                ArgumentNullException.ThrowIfNull(token);
+
                 var deletedEntity = await _unitOfWork.ReservationManager.DeleteAsync(id);
 
-                Reservation reservation = await _unitOfWork.ReservationManager.GetFirstQueuedAsync(deletedEntity.SessionId);
-                await SendConfirmationEmailAsync(reservation);
+                if (await CanBeConfirmedAsync(deletedEntity))
+                {
+                    var reservation = await _unitOfWork.ReservationManager.GetFirstQueuedAsync(deletedEntity.SessionId);
+                    if (reservation is not null)
+                    {
+                        await SendConfirmationEmailAsync(reservation);
+                    }
+                }
 
                 return Ok(deletedEntity);
             }
@@ -151,6 +163,10 @@ namespace GamePlanner.Controllers
         {
             try
             {
+                ArgumentNullException.ThrowIfNull(sessionId);
+                ArgumentNullException.ThrowIfNull(userId);
+                ArgumentNullException.ThrowIfNull(token);
+
                 Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
                 if (reservation.IsConfirmed) return BadRequest("Reservation already confirmed");
 
@@ -176,6 +192,9 @@ namespace GamePlanner.Controllers
         {
             try
             {
+                ArgumentNullException.ThrowIfNull(sessionId);
+                ArgumentNullException.ThrowIfNull(userId);
+
                 Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
                 if (!reservation.IsNotified) return BadRequest("Reservation not alredy notified");
 
@@ -235,9 +254,9 @@ namespace GamePlanner.Controllers
         private async Task<bool> CanBeConfirmedAsync(Reservation entity)
         {
             Session session = await _unitOfWork.SessionManager.GetByIdAsync(entity.SessionId);
-            var reservations = await _unitOfWork.ReservationManager.GetConfirmedAsync(entity.SessionId);
+            var confirmedReservations = await _unitOfWork.ReservationManager.GetConfirmedAsync(entity.SessionId);
 
-            if (reservations is null || reservations.Count() >= session.Seats) return false;
+            if (confirmedReservations is null || confirmedReservations.Count() >= session.Seats) return false;
 
             return true;
         }
