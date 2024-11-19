@@ -119,35 +119,39 @@ builder.Services.AddSwaggerGen(option =>
     );
 });
 
-string myCorsKey = "MyAllowSpecificOrigins";
-
-//builder.Services.AddCors(o => {
-//    o.AddPolicy(myCorsKey, b => {
-//        b.WithOrigins(KeyVaultHelper.GetSecretString(myCorsKey))
-//        .AllowAnyMethod()
-//        .AllowAnyHeader()
-//        .AllowCredentials();
-//    });
-//});
-
+#if DEBUG
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()  // Permetti richieste da qualsiasi origine
-              .AllowAnyMethod()  // Permetti qualsiasi tipo di metodo HTTP (GET, POST, PUT, DELETE, ecc.)
-              .AllowAnyHeader(); // Permetti qualsiasi intestazione
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
+#else
+string myCorsKey = "MyAllowSpecificOrigins";
+
+builder.Services.AddCors(o =>
+{
+    o.AddPolicy(myCorsKey, b =>
+    {
+        b.WithOrigins(KeyVaultHelper.GetSecretString(myCorsKey))
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
+    });
+});
+#endif
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+#if DEBUG
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseCors("AllowAll");
+#else
+app.UseCors(myCorsKey);
+#endif
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
