@@ -50,7 +50,7 @@ namespace GamePlanner.Controllers
 
                 foreach (var user in users)
                 {
-                    var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(r => r.Equals("Admin")) ?? "Normal";
+                    var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(r => r.Equals(UserRoles.Admin)) ?? UserRoles.User;
                     usersDTO.Add(new ApplicationUserOutputDTO
                     {
                         Id = user.Id,
