@@ -46,7 +46,7 @@ namespace GamePlanner.Controllers
             {
                 var usersDTO = new List<ApplicationUserOutputDTO>();
                 
-                var users = await _unitOfWork.ApplicationUserManager.GetAll().ToListAsync();
+                var users = await _unitOfWork.ApplicationUserManager.GetAll().Where(u => !u.IsDeleted).ToListAsync();
 
                 foreach (var user in users)
                 {
