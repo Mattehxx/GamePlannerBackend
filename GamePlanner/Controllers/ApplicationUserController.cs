@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace GamePlanner.Controllers
 {
@@ -40,15 +39,14 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [HttpGet("admin")]
-        public async Task<IActionResult> AdminGet(ODataQueryOptions<ApplicationUser> options)
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
         {
             try
             {
-                var users = _unitOfWork.ApplicationUserManager.Get(options) as IQueryable<ApplicationUser>;
-
-                var userList = await users.ToListAsync();
                 var usersDTO = new List<ApplicationUserOutputDTO>();
+                
+                var users = await _unitOfWork.ApplicationUserManager.GetAll().ToListAsync();
 
                 foreach (var user in users)
                 {
