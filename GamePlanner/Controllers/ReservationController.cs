@@ -167,7 +167,7 @@ namespace GamePlanner.Controllers
                 ArgumentNullException.ThrowIfNull(token);
 
                 Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
-                if (reservation.IsConfirmed) return BadRequest("Reservation already confirmed");
+                if (reservation.IsConfirmed && !reservation.IsDeleted) return BadRequest("Reservation already confirmed");
 
                 if (!await CanBeConfirmedAsync(reservation))
                 {
