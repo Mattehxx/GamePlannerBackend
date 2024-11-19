@@ -1,5 +1,6 @@
 ﻿using GamePlanner.DAL.Data.Auth;
 using GamePlanner.DTO.Mapper;
+using GamePlanner.DTO.OutputDTO.GeneralDTO;
 using GamePlanner.Services;
 using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Identity;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace GamePlanner.Controllers
 {
@@ -24,11 +26,36 @@ namespace GamePlanner.Controllers
         #region CRUD
 
         [HttpGet]
-        public IActionResult Get(ODataQueryOptions<ApplicationUser> options)
+        public async Task<IActionResult> Get(ODataQueryOptions<ApplicationUser> options)
         {
             try
             {
-                return options == null ? BadRequest("No options found") : Ok(_unitOfWork.ApplicationUserManager.Get(options));
+                var users = _unitOfWork.ApplicationUserManager.Get(options) as IQueryable<ApplicationUser> 
+                    ?? throw new InvalidOperationException("No users found");
+
+                var userList = await users.ToListAsync();
+                var usersDTO = new List<ApplicationUserOutputDTO>();
+
+                foreach (var user in users)
+                {
+                    var roles = await _userManager.GetRolesAsync(user) as List<string>;
+                    usersDTO.Add(new ApplicationUserOutputDTO
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Surname = user.Surname,
+                        BirthDate = user.BirthDate,
+                        Level = user.Level,
+                        IsDisabled = user.IsDisabled,
+                        IsDeleted = user.IsDeleted,
+                        UserName = user.UserName,
+                        Email = user.Email,
+                        ImgUrl = user.ImgUrl,
+                        Roles = roles
+                    });
+                }
+
+                return Ok(usersDTO);
             }
             catch (Exception ex)
             {
