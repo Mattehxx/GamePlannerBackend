@@ -59,6 +59,7 @@ namespace GamePlanner.Controllers
                         BirthDate = user.BirthDate,
                         Level = user.Level,
                         IsDisabled = user.IsDisabled,
+                        PhoneNumber = user.PhoneNumber,
                         IsDeleted = user.IsDeleted,
                         UserName = user.UserName,
                         Email = user.Email,
