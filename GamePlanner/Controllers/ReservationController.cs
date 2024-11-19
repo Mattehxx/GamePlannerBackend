@@ -48,7 +48,7 @@ namespace GamePlanner.Controllers
 
                 if (!await CanBeConfirmedAsync(entity))
                 {
-                    _ = SendQueuedEmailAsync(entity);
+                    await SendQueuedEmailAsync(entity);
                 }
                 else
                 {
@@ -91,7 +91,7 @@ namespace GamePlanner.Controllers
 
                     if (!await CanBeConfirmedAsync(entity))
                     {
-                        _ = SendQueuedEmailAsync(entity);
+                        await SendQueuedEmailAsync(entity);
                     }
                     else
                     {
@@ -171,12 +171,12 @@ namespace GamePlanner.Controllers
 
                 if (!await CanBeConfirmedAsync(reservation))
                 {
-                    _ = SendQueuedEmailAsync(reservation);
+                    await SendQueuedEmailAsync(reservation);
                     return BadRequest("Session full");
                 }
 
                 reservation = await _unitOfWork.ReservationManager.ConfirmAsync(reservation, token);
-                _ = SendDeleteEmailAsync(reservation);
+                await SendDeleteEmailAsync(reservation);
 
                 return Ok();
             }
