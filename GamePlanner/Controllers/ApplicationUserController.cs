@@ -92,11 +92,13 @@ namespace GamePlanner.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<ApplicationUser> jsonPatch)
+        public async Task<IActionResult> Update(string id, [FromBody] JsonPatchDocument<ApplicationUser> jsonPatch)
         {
             try
             {
-                return jsonPatch == null ? BadRequest("Invalid user") :Ok(await _unitOfWork.ApplicationUserManager.PatchAsync(id, jsonPatch));
+                return jsonPatch == null 
+                    ? BadRequest("Invalid user") 
+                    : Ok(await _unitOfWork.ApplicationUserManager.PatchAsync(id, jsonPatch));
 
             }
             catch (Exception ex)
