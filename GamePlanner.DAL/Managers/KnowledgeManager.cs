@@ -18,7 +18,7 @@ namespace GamePlanner.DAL.Managers
         }
         public override IQueryable Get(ODataQueryOptions<Knowledge> oDataQueryOptions)
         {
-            return oDataQueryOptions.ApplyTo(_dbSet.Include(k => k.Preferences));
+            return oDataQueryOptions.ApplyTo(_dbSet.Where(set => !set.IsDeleted));
         }
     }
 }

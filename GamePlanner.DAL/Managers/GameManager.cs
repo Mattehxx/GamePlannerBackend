@@ -18,7 +18,7 @@ namespace GamePlanner.DAL.Managers
         }
         public override IQueryable Get(ODataQueryOptions<Game> oDataQueryOptions)
         {
-            return oDataQueryOptions.ApplyTo(_dbSet.Include(g => g.Sessions).Include(g => g.Preferences));
+            return oDataQueryOptions.ApplyTo(_dbSet.Where(set => !set.IsDeleted));
         }
 
         public async Task<Game> DisableOrEnableGame(int gameId)

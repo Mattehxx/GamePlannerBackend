@@ -85,7 +85,7 @@ namespace GamePlanner.DAL.Managers
         }
         public override IQueryable Get(ODataQueryOptions<Reservation> oDataQueryOptions)
         {
-            return oDataQueryOptions.ApplyTo(_dbSet.Include(r => r.User).Include(r => r.Session));
+            return oDataQueryOptions.ApplyTo(_dbSet.Where(set => !set.IsDeleted));
         }
 
         public override Task<Reservation> CreateAsync(Reservation entity)

@@ -34,7 +34,7 @@ namespace GamePlanner.DAL.Managers
         
         public override IQueryable Get(ODataQueryOptions<ApplicationUser> oDataQueryOptions)
         {
-            return oDataQueryOptions.ApplyTo(_dbSet.Include(u => u.Preferences).Include(u => u.AdminEvents).Include(u => u.Reservations));
+            return oDataQueryOptions.ApplyTo(_dbSet.Where(set => !set.IsDeleted));
         }
     }
 }

@@ -51,7 +51,7 @@ namespace GamePlanner.Managers
         }
         public override IQueryable Get(ODataQueryOptions<Event> oDataQueryOptions)
         {
-            return oDataQueryOptions.ApplyTo(_dbSet.Include(e => e.AdminUser).Include(e => e.Sessions));
+            return oDataQueryOptions.ApplyTo(_dbSet.Where(set => !set.IsDeleted));
         }
     }
 }

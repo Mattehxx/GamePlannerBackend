@@ -18,7 +18,7 @@ namespace GamePlanner.DAL.Managers
         }
         public override IQueryable Get(ODataQueryOptions<Session> oDataQueryOptions)
         {
-            return oDataQueryOptions.ApplyTo(_dbSet.Include(s => s.Reservations).Include(s => s.Event).Include(s => s.Master).Include(s => s.Game));
+            return oDataQueryOptions.ApplyTo(_dbSet.Where(set => !set.IsDeleted));
         }
 
         public IQueryable<Session> GetUpcomingSessions()
