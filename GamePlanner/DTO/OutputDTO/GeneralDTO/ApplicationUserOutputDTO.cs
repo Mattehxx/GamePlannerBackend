@@ -5,6 +5,6 @@ namespace GamePlanner.DTO.OutputDTO.GeneralDTO
 {
     public class ApplicationUserOutputDTO : ApplicationUser
     {
-        public List<string>? Roles { get; set; }
+        public string? Role { get; set; }
     }
 }

@@ -26,19 +26,33 @@ namespace GamePlanner.Controllers
         #region CRUD
 
         [HttpGet]
-        public async Task<IActionResult> Get(ODataQueryOptions<ApplicationUser> options)
+        public IActionResult Get(ODataQueryOptions<ApplicationUser> options)
         {
             try
             {
-                var users = _unitOfWork.ApplicationUserManager.Get(options) as IQueryable<ApplicationUser> 
-                    ?? throw new InvalidOperationException("No users found");
+                return options is null
+                    ? BadRequest()
+                    : Ok(_unitOfWork.ApplicationUserManager.Get(options));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("admin")]
+        public async Task<IActionResult> AdminGet(ODataQueryOptions<ApplicationUser> options)
+        {
+            try
+            {
+                var users = _unitOfWork.ApplicationUserManager.Get(options) as IQueryable<ApplicationUser>;
 
                 var userList = await users.ToListAsync();
                 var usersDTO = new List<ApplicationUserOutputDTO>();
 
                 foreach (var user in users)
                 {
-                    var roles = await _userManager.GetRolesAsync(user) as List<string>;
+                    var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(r => r.Equals("Admin")) ?? "Normal";
                     usersDTO.Add(new ApplicationUserOutputDTO
                     {
                         Id = user.Id,
@@ -51,7 +65,7 @@ namespace GamePlanner.Controllers
                         UserName = user.UserName,
                         Email = user.Email,
                         ImgUrl = user.ImgUrl,
-                        Roles = roles
+                        Role = role
                     });
                 }
 

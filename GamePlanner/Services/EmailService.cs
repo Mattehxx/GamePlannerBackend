@@ -76,9 +76,9 @@ namespace GamePlanner.Services
             await SendEmailAsync(receiver, "Confirm reservation", template);
         }
 
-        public async Task SendDeleteEmailAsync(string receiver, string name, int reservationId, string token)
+        public async Task SendDeleteEmailAsync(string receiver, string name, int reservationId)
         {
-            var uniqueUrl = GenerateDeleteLink(reservationId, token);
+            var uniqueUrl = GenerateDeleteLink(reservationId);
             var templateName = GetEmailTemplateName(EmailTemplateEnum.DeleteReservation);
             var template = await GetEmailTemplateAsync(templateName);
             template = ComputeEmailTemplate(
@@ -138,10 +138,10 @@ namespace GamePlanner.Services
             return $"{emailConfirmUrl}?sessionId={sessionId}&userId={userId}&token={token}";
         }
 
-        public string GenerateDeleteLink(int reservationId, string token)
+        public string GenerateDeleteLink(int reservationId)
         {
             var emailDeleteUrl = KeyVaultHelper.GetSecretString("EmailDeleteUrl");
-            return $"{emailDeleteUrl}?reservationId={reservationId}&token={token}";
+            return $"{emailDeleteUrl}?reservationId={reservationId}";
         }
     }
 }

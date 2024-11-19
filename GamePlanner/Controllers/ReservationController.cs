@@ -115,12 +115,11 @@ namespace GamePlanner.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(int id, string token)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 ArgumentNullException.ThrowIfNull(id);
-                ArgumentNullException.ThrowIfNull(token);
 
                 var deletedEntity = await _unitOfWork.ReservationManager.DeleteAsync(id);
 
@@ -233,7 +232,7 @@ namespace GamePlanner.Controllers
 
             if (user is null || user.Email is null) return false;
 
-            await _emailService.SendDeleteEmailAsync(user.Email, user.Name, entity.ReservationId, entity.Token);
+            await _emailService.SendDeleteEmailAsync(user.Email, user.Name, entity.ReservationId);
 
             return true;
         }
