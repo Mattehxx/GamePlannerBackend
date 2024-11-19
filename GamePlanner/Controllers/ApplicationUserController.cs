@@ -77,11 +77,13 @@ namespace GamePlanner.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             try
             {
-                return id == 0 ? BadRequest("Invalid user id") : Ok(await _unitOfWork.ApplicationUserManager.DeleteAsync(id)); 
+                return id == string.Empty 
+                    ? BadRequest("Invalid user id") 
+                    : Ok(await _unitOfWork.ApplicationUserManager.DeleteAsync(id)); 
             }
             catch (Exception ex)
             {

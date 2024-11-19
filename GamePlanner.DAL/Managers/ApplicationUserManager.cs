@@ -9,7 +9,7 @@ namespace GamePlanner.DAL.Managers
 {
     public class ApplicationUserManager(GamePlannerDbContext context) : GenericManager<ApplicationUser>(context), IApplicationUserManager
     {
-        public override async Task<ApplicationUser> DeleteAsync(int id)
+        public async Task<ApplicationUser> DeleteAsync(string id)
         {
             ApplicationUser entity = await GetByIdAsync(id);
             entity.IsDeleted = true;
