@@ -107,7 +107,7 @@ namespace GamePlanner.Controllers
             //var fileBytes = client.GetByteArrayAsync("https://github.com/GabryTm047/download-APK-PW1-2anno-_ITS/raw/refs/heads/main/app-release.apk").Result; 
             //return File(fileBytes, "application/vnd.android.package-archive", "GamePlanner.apk");
 
-            return Ok("https://github.com/GabryTm047/download-APK-PW1-2anno-_ITS/raw/refs/heads/main/app-release.apk");
+            return Ok(new { message = "https://github.com/GabryTm047/download-APK-PW1-2anno-_ITS/raw/refs/heads/main/app-release.apk" });
         }
         }
 }

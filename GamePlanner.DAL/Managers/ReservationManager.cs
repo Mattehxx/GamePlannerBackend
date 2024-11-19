@@ -49,6 +49,7 @@ namespace GamePlanner.DAL.Managers
             if (entity.Token != token) throw new InvalidOperationException("Invalid token");
 
             entity.IsConfirmed = true;
+            _context.Update(entity);
             return await _context.SaveChangesAsync() > 0
                 ? entity
                 : throw new InvalidOperationException("Failed to confirm reservation");
