@@ -81,6 +81,7 @@ namespace GamePlanner.Controllers
                 BirthDate = model.BirthDate,
                 Level = 0,
                 UserName = model.Email,
+                PhoneNumber = model.Phone,
                 IsDisabled = false,
                 IsDeleted = false
             };
@@ -107,6 +108,7 @@ namespace GamePlanner.Controllers
                 BirthDate = model.BirthDate,
                 Level = 0,
                 UserName = model.Email,
+                PhoneNumber = model.Phone,
                 IsDisabled = false,
                 IsDeleted = false
             };
