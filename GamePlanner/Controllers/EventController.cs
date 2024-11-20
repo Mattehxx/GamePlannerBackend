@@ -44,7 +44,7 @@ namespace GamePlanner.Controllers
             try
             {
                 if (model == null) return BadRequest("Invalid event");
-                return Ok(await _unitOfWork.EventManager.CreateAsync( _mapper.ToEntity(model)));
+                return Ok(await _unitOfWork.EventManager.CreateAsync(_mapper.ToEntity(model)));
              }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace GamePlanner.Controllers
             {
                 if (jsonPatch == null) return BadRequest("Invalid event");
 
-                await NotifyUsers(id, jsonPatch);
+                if (ContainsIsPublicOperation(jsonPatch)) await NotifyUsers(id);
 
                 return Ok(await _unitOfWork.EventManager.PatchAsync(id, jsonPatch));
             }
@@ -108,40 +108,39 @@ namespace GamePlanner.Controllers
 
         #region Utility
 
-        private async Task NotifyUsers(int id, JsonPatchDocument<Event> jsonPatch)
+        private bool ContainsIsPublicOperation(JsonPatchDocument<Event> jsonPatch)
         {
-            var modifiedFields = jsonPatch.Operations
-                    .Where(op => op.path == "/isPublic" && op.from == "false" && op.value.ToString() == "true")
-                    .FirstOrDefault();
+            return jsonPatch.Operations
+                .Any(op => op.path == "/isPublic" && op.from == "false" && op.value.ToString() == "true");
+        }
 
-            if (modifiedFields is not null)
+        private async Task NotifyUsers(int id)
+        {
+            var sessions = _unitOfWork.SessionManager.GetAll()
+                .Where(s => s.EventId == id && !s.IsDeleted)
+                .ToList();
+
+            foreach (var session in sessions)
             {
-                var sessions = _unitOfWork.SessionManager.GetAll()
-                    .Where(s => s.EventId == id && !s.IsDeleted)
+                var reservations = _unitOfWork.ReservationManager.GetAll()
+                    .Include(r => r.User)
+                    .Where(r => r.SessionId == session.SessionId
+                    && !r.IsDeleted
+                    && !r.IsNotified
+                    && !r.IsConfirmed)
                     .ToList();
 
-                foreach (var session in sessions)
+                foreach (var reservation in reservations)
                 {
-                    var reservations = _unitOfWork.ReservationManager.GetAll()
-                        .Include(r => r.User)
-                        .Where(r => r.SessionId == session.SessionId
-                        && !r.IsDeleted
-                        && !r.IsNotified
-                        && !r.IsConfirmed)
-                        .ToList();
-
-                    foreach (var reservation in reservations)
+                    if (reservation.User is not null)
                     {
-                        if (reservation.User is not null)
-                        {
-                            await _emailService.SendConfirmationEmailAsync(
-                                reservation.User.Email!,
-                                reservation.User.Name,
-                                session.SessionId,
-                                reservation.UserId,
-                                reservation.Token
-                            );
-                        }
+                        await _emailService.SendConfirmationEmailAsync(
+                            reservation.User.Email!,
+                            reservation.User.Name,
+                            session.SessionId,
+                            reservation.UserId,
+                            reservation.Token
+                        );
                     }
                 }
             }
