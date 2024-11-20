@@ -34,7 +34,7 @@ namespace GamePlanner.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] GameInputDTO model)
+        public async Task<IActionResult> Create([FromForm] GameInputDTO model)
         {
             try
             {
