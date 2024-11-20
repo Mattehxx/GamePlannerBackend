@@ -46,11 +46,11 @@ namespace GamePlanner.Controllers
             {
                 var usersDTO = new List<ApplicationUserOutputDTO>();
                 
-                var users = await _unitOfWork.ApplicationUserManager.GetAll().ToListAsync();
+                var users = await _unitOfWork.ApplicationUserManager.GetAll().Where(u => !u.IsDeleted).ToListAsync();
 
                 foreach (var user in users)
                 {
-                    var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(r => r.Equals("Admin")) ?? "Normal";
+                    var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(r => r.Equals(UserRoles.Admin)) ?? UserRoles.User;
                     usersDTO.Add(new ApplicationUserOutputDTO
                     {
                         Id = user.Id,
@@ -77,11 +77,13 @@ namespace GamePlanner.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             try
             {
-                return id == 0 ? BadRequest("Invalid user id") : Ok(await _unitOfWork.ApplicationUserManager.DeleteAsync(id)); 
+                return id == string.Empty 
+                    ? BadRequest("Invalid user id") 
+                    : Ok(await _unitOfWork.ApplicationUserManager.DeleteAsync(id)); 
             }
             catch (Exception ex)
             {
@@ -90,11 +92,13 @@ namespace GamePlanner.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<ApplicationUser> jsonPatch)
+        public async Task<IActionResult> Update(string id, [FromBody] JsonPatchDocument<ApplicationUser> jsonPatch)
         {
             try
             {
-                return jsonPatch == null ? BadRequest("Invalid user") :Ok(await _unitOfWork.ApplicationUserManager.PatchAsync(id, jsonPatch));
+                return jsonPatch == null 
+                    ? BadRequest("Invalid user") 
+                    : Ok(await _unitOfWork.ApplicationUserManager.PatchAsync(id, jsonPatch));
 
             }
             catch (Exception ex)
