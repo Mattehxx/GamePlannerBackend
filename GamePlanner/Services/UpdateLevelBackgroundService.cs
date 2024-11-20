@@ -27,13 +27,17 @@ namespace GamePlanner.Services
                     {
                         try
                         {
-                            var reservation = await dbContext.Reservations
+                            using var personalScope = _serviceProvider.CreateScope();
+                            var personalDbContext = scope.ServiceProvider.GetRequiredService<GamePlannerDbContext>();
+
+                            var reservation = await personalDbContext.Reservations
                                 .Include(r => r.User)
                                 .FirstOrDefaultAsync(r => r.SessionId == session.SessionId, cancellationToken);
 
                             if (reservation?.User != null)
                             {
                                 reservation.User.Level += (int)(session.EndDate - session.StartDate).TotalHours;
+                                await personalDbContext.SaveChangesAsync(cancellationToken);
                             }
                         }
                         catch (Exception ex)
@@ -43,8 +47,6 @@ namespace GamePlanner.Services
                     });
 
                     await Task.WhenAll(tasks);
-
-                    await dbContext.SaveChangesAsync(cancellationToken);
                 }
                 catch (Exception ex)
                 {
