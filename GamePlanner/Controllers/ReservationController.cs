@@ -48,7 +48,7 @@ namespace GamePlanner.Controllers
 
                 if (!await CanBeConfirmedAsync(entity))
                 {
-                    _ = SendQueuedEmailAsync(entity);
+                    await SendQueuedEmailAsync(entity);
                 }
                 else
                 {
@@ -91,7 +91,7 @@ namespace GamePlanner.Controllers
 
                     if (!await CanBeConfirmedAsync(entity))
                     {
-                        _ = SendQueuedEmailAsync(entity);
+                        await SendQueuedEmailAsync(entity);
                     }
                     else
                     {
@@ -115,12 +115,11 @@ namespace GamePlanner.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(int id, string token)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 ArgumentNullException.ThrowIfNull(id);
-                ArgumentNullException.ThrowIfNull(token);
 
                 var deletedEntity = await _unitOfWork.ReservationManager.DeleteAsync(id);
 
@@ -168,16 +167,16 @@ namespace GamePlanner.Controllers
                 ArgumentNullException.ThrowIfNull(token);
 
                 Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
-                if (reservation.IsConfirmed) return BadRequest("Reservation already confirmed");
+                if (reservation.IsConfirmed && !reservation.IsDeleted) return BadRequest("Reservation already confirmed");
 
                 if (!await CanBeConfirmedAsync(reservation))
                 {
-                    _ = SendQueuedEmailAsync(reservation);
+                    await SendQueuedEmailAsync(reservation);
                     return BadRequest("Session full");
                 }
 
                 reservation = await _unitOfWork.ReservationManager.ConfirmAsync(reservation, token);
-                _ = SendDeleteEmailAsync(reservation);
+                await SendDeleteEmailAsync(reservation);
 
                 return Ok();
             }
@@ -233,7 +232,7 @@ namespace GamePlanner.Controllers
 
             if (user is null || user.Email is null) return false;
 
-            await _emailService.SendDeleteEmailAsync(user.Email, user.Name, entity.ReservationId, entity.Token);
+            await _emailService.SendDeleteEmailAsync(user.Email, user.Name, entity.ReservationId);
 
             return true;
         }

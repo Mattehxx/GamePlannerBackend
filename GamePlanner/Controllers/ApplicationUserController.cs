@@ -1,5 +1,6 @@
 ﻿using GamePlanner.DAL.Data.Auth;
 using GamePlanner.DTO.Mapper;
+using GamePlanner.DTO.OutputDTO.GeneralDTO;
 using GamePlanner.Services;
 using GamePlanner.Services.IServices;
 using Microsoft.AspNetCore.Identity;
@@ -28,7 +29,46 @@ namespace GamePlanner.Controllers
         {
             try
             {
-                return options == null ? BadRequest("No options found") : Ok(_unitOfWork.ApplicationUserManager.Get(options));
+                return options is null
+                    ? BadRequest()
+                    : Ok(_unitOfWork.ApplicationUserManager.Get(options));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var usersDTO = new List<ApplicationUserOutputDTO>();
+                
+                var users = await _unitOfWork.ApplicationUserManager.GetAll().ToListAsync();
+
+                foreach (var user in users)
+                {
+                    var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(r => r.Equals("Admin")) ?? "Normal";
+                    usersDTO.Add(new ApplicationUserOutputDTO
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Surname = user.Surname,
+                        BirthDate = user.BirthDate,
+                        Level = user.Level,
+                        IsDisabled = user.IsDisabled,
+                        PhoneNumber = user.PhoneNumber,
+                        IsDeleted = user.IsDeleted,
+                        UserName = user.UserName,
+                        Email = user.Email,
+                        ImgUrl = user.ImgUrl,
+                        Role = role
+                    });
+                }
+
+                return Ok(usersDTO);
             }
             catch (Exception ex)
             {

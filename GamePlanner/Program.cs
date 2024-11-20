@@ -24,7 +24,7 @@ builder.Services.AddHostedService<ReservationTokenBackgroundService>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IBlobService, BlobService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddSingleton<IMapper, Mapper>(); 
+builder.Services.AddSingleton<IMapper, Mapper>();
 
 //OData
 var modelbuilder = new ODataConventionModelBuilder();
