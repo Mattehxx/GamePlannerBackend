@@ -1,8 +1,10 @@
-﻿using GamePlanner.DAL.Data.Entity;
+﻿using GamePlanner.DAL.Data.Auth;
+using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DTO.InputDTO;
 using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
 using GamePlanner.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -101,6 +103,20 @@ namespace GamePlanner.Controllers
                 return Ok(await _unitOfWork.EventManager.UpdateAsync(currentEvent));
             }
             catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpPost("createRecurrence/{id}")]
+        public async Task<IActionResult> CreateRecurrence(int id,DateTime newDate)
+        {
+            try
+            {
+                var res = await _unitOfWork.EventManager.CreateNewRecurrenceSessions(id, newDate);
+                return res ? Ok(res) : BadRequest("no sessions was created");
+            }
+            catch(Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
