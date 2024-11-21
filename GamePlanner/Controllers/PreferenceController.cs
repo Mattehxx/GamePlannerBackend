@@ -20,7 +20,7 @@ namespace GamePlanner.Controllers
 
         #region CRUD
 
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize]
         [HttpGet]
         public IActionResult Get(ODataQueryOptions<Preference> options)
         {
@@ -35,7 +35,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PreferenceInputDTO model)
         {
@@ -50,7 +50,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -65,7 +65,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<Preference> jsonPatch)
         {
