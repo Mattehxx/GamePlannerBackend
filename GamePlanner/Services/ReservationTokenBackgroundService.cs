@@ -19,36 +19,25 @@ namespace GamePlanner.Services
                         .Where(s => s.StartDate > DateTime.Now && !s.IsDeleted)
                         .ToListAsync(cancellationToken);
 
-                    var sessionTasks = sessions.Select(async session =>
+                    foreach (var session in sessions) 
                     {
-                        try
-                        {
-                            var reservations = await dbContext.Reservations
+                        var reservations = await dbContext.Reservations
                                 .Where(r => r.SessionId == session.SessionId && !r.IsDeleted)
                                 .ToListAsync(cancellationToken);
 
-                            var reservationTasks = reservations.Select(async reservation =>
-                            {
-                                if (reservation.TokenCreateDate < DateTime.Now.AddMinutes(-30))
-                                {
-                                    reservation.Token = Guid.NewGuid().ToString();
-                                    reservation.TokenCreateDate = DateTime.Now;
-
-                                    dbContext.Reservations.Update(reservation);
-                                }
-                            });
-
-                            await Task.WhenAll(reservationTasks);
-
-                            await dbContext.SaveChangesAsync(cancellationToken);
-                        }
-                        catch (Exception ex)
+                        foreach (var reservation in reservations)
                         {
-                            Console.WriteLine($"Session {session.SessionId} error: {ex.Message}");
-                        }
-                    });
+                            if (reservation.TokenCreateDate < DateTime.Now.AddMinutes(-30))
+                            {
+                                reservation.Token = Guid.NewGuid().ToString();
+                                reservation.TokenCreateDate = DateTime.Now;
 
-                    await Task.WhenAll(sessionTasks);
+                                dbContext.Reservations.Update(reservation);
+                            }
+                        }
+
+                        await dbContext.SaveChangesAsync(cancellationToken);
+                    }
                 }
                 catch (Exception ex)
                 {
