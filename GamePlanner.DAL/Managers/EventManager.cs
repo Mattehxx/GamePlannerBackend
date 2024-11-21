@@ -14,7 +14,7 @@ namespace GamePlanner.Managers
             var myEvent = _dbSet.AsQueryable().Include(e => e.Sessions).SingleOrDefault(e => e.EventId.Equals(eventId))
                 ?? throw new InvalidOperationException($"event with id:{eventId} not found");
             DateTime lastDate = myEvent.Sessions?.Last().StartDate ?? throw new Exception("sessions not found");
-            var sessions = myEvent.Sessions?.Where(s => s.StartDate.Date == lastDate.Date) ?? throw new InvalidOperationException();
+            var sessions = myEvent.Sessions?.Where(s => s.StartDate.Date == lastDate.Date).ToList() ?? throw new InvalidOperationException();
             foreach (var session in sessions)
             {
                 var start = new DateTime(

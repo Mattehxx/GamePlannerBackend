@@ -109,7 +109,7 @@ namespace GamePlanner.Controllers
         }
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPost("createRecurrence/{id}")]
-        public async Task<IActionResult> CreateRecurrence(int id,DateTime newDate)
+        public async Task<IActionResult> CreateRecurrence(int id, [FromQuery] DateTime newDate)
         {
             try
             {
