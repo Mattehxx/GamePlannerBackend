@@ -1,7 +1,9 @@
-﻿using GamePlanner.DAL.Data.Entity;
+﻿using GamePlanner.DAL.Data.Auth;
+using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DTO.InputDTO;
 using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -18,6 +20,7 @@ namespace GamePlanner.Controllers
         private readonly IMapper _mapper = mapper;
 
         #region CRUD
+        
         [HttpGet]
         public IActionResult Get(ODataQueryOptions<Session> options)
         {
@@ -31,6 +34,8 @@ namespace GamePlanner.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] SessionInputDTO model)
         {
@@ -45,6 +50,8 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -58,6 +65,8 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<Session> jsonPatch)
         {
@@ -79,6 +88,7 @@ namespace GamePlanner.Controllers
         /// </summary>
         /// <returns></returns>
         //[NonAction]
+
         [HttpGet, Route("upcoming")]
         public async Task<IActionResult> GetUpcomingSessions()  //da rifare con mapper e dto
         {

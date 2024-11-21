@@ -98,6 +98,7 @@ namespace GamePlanner.Controllers
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost("register-admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
         {
@@ -133,7 +134,8 @@ namespace GamePlanner.Controllers
 
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
-
+        
+        [Authorize(Roles = UserRoles.User)]
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
         {
@@ -165,7 +167,7 @@ namespace GamePlanner.Controllers
             });
         }
 
-        [Authorize]
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost("revoke/{username}")]
         public async Task<IActionResult> Revoke(string username)
         {
@@ -178,7 +180,7 @@ namespace GamePlanner.Controllers
             return NoContent();
         }
 
-        [Authorize]
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost("revoke-all")]
         public async Task<IActionResult> RevokeAll()
         {

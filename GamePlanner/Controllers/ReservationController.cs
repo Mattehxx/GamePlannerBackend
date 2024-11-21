@@ -4,6 +4,7 @@ using GamePlanner.DTO.InputDTO;
 using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
 using GamePlanner.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,8 @@ namespace GamePlanner.Controllers
         private readonly IEmailService _emailService = emailService;
 
         #region CRUD
+
+        [Authorize(Roles = UserRoles.User)]
         [HttpGet]
         public IActionResult Get(ODataQueryOptions<Reservation> options)
         {
@@ -37,6 +40,7 @@ namespace GamePlanner.Controllers
             }
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ReservationInputDTO model)
         {
@@ -67,6 +71,7 @@ namespace GamePlanner.Controllers
             }
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost("multiple")]
         public async Task<IActionResult> MultipleCreate([FromBody] List<ReservationInputDTO> models)
         {
@@ -114,6 +119,7 @@ namespace GamePlanner.Controllers
             }
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
@@ -140,6 +146,7 @@ namespace GamePlanner.Controllers
             }
         }
 
+        [Authorize(Roles = UserRoles.User)]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<Reservation> jsonPatch)
         {
@@ -156,7 +163,7 @@ namespace GamePlanner.Controllers
         #endregion
 
         #region Custom
-
+        [Authorize(Roles = UserRoles.User)]
         [HttpPut("confirm")]
         public async Task<IActionResult> ConfirmReservation(int sessionId, string userId, string token)
         {
@@ -186,6 +193,7 @@ namespace GamePlanner.Controllers
             }
         }
 
+        [Authorize(Roles = UserRoles.User)]
         [HttpPost("new-confirm-email")]
         public async Task<IActionResult> SendNewConfirmationEmail(int sessionId, string userId)
         {
