@@ -39,7 +39,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ReservationInputDTO model)
         {
@@ -66,11 +66,11 @@ namespace GamePlanner.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message   =  ex.Message });
             }
         }
 
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost("multiple")]
         public async Task<IActionResult> MultipleCreate([FromBody] List<ReservationInputDTO> models)
         {
@@ -118,7 +118,6 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.User)]
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
@@ -145,7 +144,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<Reservation> jsonPatch)
         {
@@ -162,7 +161,6 @@ namespace GamePlanner.Controllers
         #endregion
 
         #region Custom
-        [Authorize(Roles = UserRoles.User)]
         [HttpPut("confirm")]
         public async Task<IActionResult> ConfirmReservation(int sessionId, string userId, string token)
         {
@@ -192,7 +190,6 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.User)]
         [HttpPost("new-confirm-email")]
         public async Task<IActionResult> SendNewConfirmationEmail(int sessionId, string userId)
         {

@@ -33,13 +33,13 @@ namespace GamePlanner.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+            if (user != null && !user.IsDisabled && !user.IsDeleted && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
 
                 List<Claim> authClaims =
                 [
-                    new(ClaimTypes.Name, user.UserName),
+                    new(ClaimTypes.Name, user.UserName!),
                     new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 ];
 
@@ -135,7 +135,6 @@ namespace GamePlanner.Controllers
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
         
-        [Authorize(Roles = UserRoles.User)]
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
         {

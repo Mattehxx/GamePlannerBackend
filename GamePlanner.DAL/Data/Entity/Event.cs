@@ -7,7 +7,6 @@ namespace GamePlanner.DAL.Data.Entity
     public class Event
     {
         public int EventId { get; set; }
-        [RegularExpression(@"^[A-Za-zÀ-ÖØ-öø-ÿ'\- ]{1,50}$", ErrorMessage = "Name format not valid")]
         public required string Name { get; set; }
         public required string Description { get; set; }
         public required bool IsPublic { get; set; }

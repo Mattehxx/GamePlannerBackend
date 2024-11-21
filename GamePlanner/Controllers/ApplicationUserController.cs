@@ -24,7 +24,7 @@ namespace GamePlanner.Controllers
         private readonly IBlobService _blobService = blobService;
 
         #region CRUD
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize]
         [HttpGet]
         public IActionResult Get(ODataQueryOptions<ApplicationUser> options)
         {
@@ -94,7 +94,7 @@ namespace GamePlanner.Controllers
             }
         }
        
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] JsonPatchDocument<ApplicationUser> jsonPatch)
         {
@@ -112,7 +112,7 @@ namespace GamePlanner.Controllers
         }
 
         #endregion
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize]
         [HttpPut("image/{id}")]
         public async Task<IActionResult> UpdateImage(string id, IFormFile file)
         {
