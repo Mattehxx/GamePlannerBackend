@@ -114,6 +114,7 @@ namespace GamePlanner.Controllers
                             s.Event!.EventId,   //controllo nell'if
                             s.Event.Name,
                             s.Event.Description,
+                            s.Event.ImgUrl
                         },
                         Game = new
                         {
