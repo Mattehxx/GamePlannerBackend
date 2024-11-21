@@ -4,6 +4,7 @@ using GamePlanner.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -227,6 +228,20 @@ namespace GamePlanner.Controllers
                 throw new SecurityTokenException("Invalid token");
 
             return principal;
+        }
+
+        [Authorize]
+        [HttpGet("user/isAdmin")]
+        public IActionResult IsAdmin()
+        {
+            try
+            {
+                return Ok(User.IsInRole(UserRoles.Admin));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
     }
 }
