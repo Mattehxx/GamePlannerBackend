@@ -1,7 +1,9 @@
-﻿using GamePlanner.DAL.Data.Entity;
+﻿using GamePlanner.DAL.Data.Auth;
+using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DTO.InputDTO;
 using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -17,6 +19,8 @@ namespace GamePlanner.Controllers
         private readonly IMapper _mapper = mapper;
 
         #region CRUD
+
+        [Authorize(Roles = UserRoles.User)]
         [HttpGet]
         public IActionResult Get(ODataQueryOptions<Preference> options)
         {
@@ -30,6 +34,8 @@ namespace GamePlanner.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize(Roles = UserRoles.User)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PreferenceInputDTO model)
         {
@@ -43,6 +49,8 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -56,6 +64,8 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        [Authorize(Roles = UserRoles.User)]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<Preference> jsonPatch)
         {

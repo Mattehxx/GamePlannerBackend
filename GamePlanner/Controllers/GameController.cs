@@ -1,8 +1,10 @@
-﻿using GamePlanner.DAL.Data.Entity;
+﻿using GamePlanner.DAL.Data.Auth;
+using GamePlanner.DAL.Data.Entity;
 using GamePlanner.DTO.InputDTO;
 using GamePlanner.DTO.Mapper;
 using GamePlanner.Services;
 using GamePlanner.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -33,6 +35,8 @@ namespace GamePlanner.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] GameInputDTO model)
         {
@@ -45,8 +49,9 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-
-        [HttpDelete,Route("{id}")]
+        
+        [Authorize(Roles = UserRoles.Admin)]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -59,6 +64,7 @@ namespace GamePlanner.Controllers
             }
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<Game> jsonPatch)
         {
@@ -74,7 +80,7 @@ namespace GamePlanner.Controllers
         }
 
         #endregion
-
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPut("image/{id}")]
         public async Task<IActionResult> UpdateImage(int id, IFormFile file)
         {
@@ -94,7 +100,7 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpPut("DisableOrEnable/{id}")]
         public async Task<IActionResult> DisableOrEnable(int id)
         {

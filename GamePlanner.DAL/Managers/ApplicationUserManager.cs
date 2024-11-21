@@ -1,10 +1,9 @@
 ﻿using GamePlanner.DAL.Data;
-using GamePlanner.DAL.Managers.IManagers;
 using GamePlanner.DAL.Data.Auth;
-using GamePlanner.DAL.Data.Entity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.OData.Query;
+using GamePlanner.DAL.Managers.IManagers;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.DAL.Managers
 {
@@ -12,13 +11,19 @@ namespace GamePlanner.DAL.Managers
     {
         public async Task<ApplicationUser> PatchAsync(string id, JsonPatchDocument<ApplicationUser> patchDocument)
         {
-            var entity = await _dbSet.FindAsync(id)
+            var entity = await _dbSet
+                .Include(u => u.Preferences)
+                    .ThenInclude(p => p.Game)
+                .Include(u => u.Preferences)
+                    .ThenInclude(p => p.Knowledge)
+                .SingleOrDefaultAsync(u => u.Id == id)
                 ?? throw new InvalidOperationException("Entity not found");
 
             patchDocument.ApplyTo(entity);
             return await _context.SaveChangesAsync() > 0 ? entity
                : throw new InvalidOperationException("Failed to update entity");
         }
+
         public async Task<ApplicationUser> DeleteAsync(string id)
         {
             ApplicationUser entity = await GetByIdAsync(id);
