@@ -25,7 +25,6 @@ namespace GamePlanner.Controllers
 
         #region CRUD
 
-        [Authorize(Roles = UserRoles.User)]
         [HttpGet]
         public IActionResult Get(ODataQueryOptions<Reservation> options)
         {
@@ -40,7 +39,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+        [Authorize(Roles = UserRoles.User)]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ReservationInputDTO model)
         {
@@ -71,7 +70,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+        [Authorize(Roles = UserRoles.User)]
         [HttpPost("multiple")]
         public async Task<IActionResult> MultipleCreate([FromBody] List<ReservationInputDTO> models)
         {
@@ -119,7 +118,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+        [Authorize(Roles = UserRoles.User)]
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
