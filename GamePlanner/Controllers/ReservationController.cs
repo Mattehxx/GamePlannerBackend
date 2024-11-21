@@ -66,7 +66,7 @@ namespace GamePlanner.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message   =  ex.Message });
             }
         }
 
