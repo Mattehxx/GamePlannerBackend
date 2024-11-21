@@ -4,5 +4,6 @@ namespace GamePlanner.DAL.Managers.IManagers
 {
     public interface ISessionManager : IManager<Session>
     {
+        public IQueryable<Session> GetUpcomingSessions();
     }
 }

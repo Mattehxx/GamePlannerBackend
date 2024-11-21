@@ -1,14 +1,30 @@
 ﻿using GamePlanner.DAL.Data;
-using GamePlanner.DAL.Managers.IManagers;
 using GamePlanner.DAL.Data.Auth;
-using GamePlanner.DAL.Data.Entity;
+using GamePlanner.DAL.Managers.IManagers;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.DAL.Managers
 {
     public class ApplicationUserManager(GamePlannerDbContext context) : GenericManager<ApplicationUser>(context), IApplicationUserManager
     {
-        public override async Task<ApplicationUser> DeleteAsync(int id)
+        public async Task<ApplicationUser> PatchAsync(string id, JsonPatchDocument<ApplicationUser> patchDocument)
+        {
+            var entity = await _dbSet
+                .Include(u => u.Preferences)
+                    .ThenInclude(p => p.Game)
+                .Include(u => u.Preferences)
+                    .ThenInclude(p => p.Knowledge)
+                .SingleOrDefaultAsync(u => u.Id == id)
+                ?? throw new InvalidOperationException("Entity not found");
+
+            patchDocument.ApplyTo(entity);
+            return await _context.SaveChangesAsync() > 0 ? entity
+               : throw new InvalidOperationException("Failed to update entity");
+        }
+
+        public async Task<ApplicationUser> DeleteAsync(string id)
         {
             ApplicationUser entity = await GetByIdAsync(id);
             entity.IsDeleted = true;
@@ -29,6 +45,11 @@ namespace GamePlanner.DAL.Managers
             return await _context.SaveChangesAsync() > 0
                 ? entity
                 : throw new InvalidOperationException("Failed to disable entity");
+        }
+        
+        public override IQueryable Get(ODataQueryOptions<ApplicationUser> oDataQueryOptions)
+        {
+            return oDataQueryOptions.ApplyTo(_dbSet.Where(set => !set.IsDeleted));
         }
     }
 }

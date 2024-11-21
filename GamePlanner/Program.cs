@@ -24,7 +24,7 @@ builder.Services.AddHostedService<ReservationTokenBackgroundService>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IBlobService, BlobService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddSingleton<IMapper, Mapper>(); 
+builder.Services.AddSingleton<IMapper, Mapper>();
 
 //OData
 var modelbuilder = new ODataConventionModelBuilder();
@@ -119,25 +119,38 @@ builder.Services.AddSwaggerGen(option =>
     );
 });
 
+#if DEBUG
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
+});
+#else
 string myCorsKey = "MyAllowSpecificOrigins";
 
-builder.Services.AddCors(o => {
-    o.AddPolicy(myCorsKey, b => {
+builder.Services.AddCors(o =>
+{
+    o.AddPolicy(myCorsKey, b =>
+    {
         b.WithOrigins(KeyVaultHelper.GetSecretString(myCorsKey))
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials();
     });
 });
+#endif
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-//}
+#if DEBUG
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseCors("AllowAll");
+#else
+app.UseCors(myCorsKey);
+#endif
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

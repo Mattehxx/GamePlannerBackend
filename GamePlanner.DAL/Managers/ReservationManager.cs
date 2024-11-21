@@ -32,7 +32,7 @@ namespace GamePlanner.DAL.Managers
         /// <exception cref="InvalidOperationException"></exception>
         public async Task<Reservation> GetBySessionAndUser(int sessionId, string userId)
         {
-            return await _dbSet.SingleAsync(r => r.SessionId == sessionId && r.UserId == userId)
+            return await _dbSet.SingleAsync(r => r.SessionId == sessionId && r.UserId == userId && !r.IsDeleted)
                 ?? throw new InvalidOperationException("Reservation not found");
         }
 
@@ -49,6 +49,7 @@ namespace GamePlanner.DAL.Managers
             if (entity.Token != token) throw new InvalidOperationException("Invalid token");
 
             entity.IsConfirmed = true;
+            _context.Update(entity);
             return await _context.SaveChangesAsync() > 0
                 ? entity
                 : throw new InvalidOperationException("Failed to confirm reservation");
@@ -75,22 +76,22 @@ namespace GamePlanner.DAL.Managers
                 .ToListAsync();
         }
 
-        public async Task<Reservation> GetFirstQueuedAsync(int sessionId)
+        public async Task<Reservation?> GetFirstQueuedAsync(int sessionId)
         {
             return await _context.Reservations
                 .Where(r => r.SessionId == sessionId && !r.IsDeleted && !r.IsConfirmed && !r.IsNotified)
                 .OrderBy(r => r.ReservationId)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
         }
         public override IQueryable Get(ODataQueryOptions<Reservation> oDataQueryOptions)
         {
-            return oDataQueryOptions.ApplyTo(_dbSet.Include(r => r.User).Include(r => r.Session));
+            return oDataQueryOptions.ApplyTo(_dbSet.Where(set => !set.IsDeleted));
         }
 
         public override Task<Reservation> CreateAsync(Reservation entity)
         {
-            var existing = _dbSet.Where(r => r.SessionId == entity.SessionId && r.UserId == entity.UserId && !r.IsDeleted).FirstOrDefault();
-            if (existing != null) throw new InvalidOperationException("Reservation already exists");
+            if (_dbSet.Any(r => r.SessionId == entity.SessionId && r.UserId == entity.UserId && !r.IsDeleted)) 
+                throw new InvalidOperationException("Reservation already exists");
             return base.CreateAsync(entity);
         }
     }

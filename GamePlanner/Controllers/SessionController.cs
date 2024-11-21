@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamePlanner.Controllers
 {
@@ -63,7 +64,59 @@ namespace GamePlanner.Controllers
             try
             {
                 if (id == 0) return BadRequest("Invalid session");
-                return Ok(await _unitOfWork.SessionManager.UpdateAsync(id, jsonPatch));
+                return Ok(await _unitOfWork.SessionManager.PatchAsync(id, jsonPatch));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        #endregion
+
+        #region CUSTOM
+        /// <summary>
+        /// DA RIFARE CON MODELLI
+        /// </summary>
+        /// <returns></returns>
+        //[NonAction]
+        [HttpGet, Route("upcoming")]
+        public async Task<IActionResult> GetUpcomingSessions()  //da rifare con mapper e dto
+        {
+            try
+            {
+                var sessions = _unitOfWork.SessionManager.GetUpcomingSessions();
+                if (sessions == null) return BadRequest();
+                if (await sessions.AllAsync(s => s.Event != null && s.Game != null))
+                {
+                    return Ok(await sessions.Select(s => new
+                    {
+                        s.SessionId,
+                        Master = s.Master != null ? new
+                        {
+                            s.MasterId,
+                            s.Master.Name, 
+                            s.Master.Surname,
+                            s.Master.Email,
+                            s.Master.ImgUrl,
+                        } : null,
+                        Event = new
+                        {
+                            s.Event!.EventId,   //controllo nell'if
+                            s.Event.Name,
+                            s.Event.Description,
+                        },
+                        Game = new
+                        {
+                            s.Game!.Name,
+                            s.Game.Description,
+                            s.Game.ImgUrl
+                        },
+                        s.StartDate,
+                        s.EndDate,
+                        s.Seats
+                    }).ToListAsync());
+                }
+                return BadRequest();
             }
             catch (Exception ex)
             {

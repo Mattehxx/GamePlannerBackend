@@ -18,7 +18,13 @@ namespace GamePlanner.DAL.Managers
         }
         public override IQueryable Get(ODataQueryOptions<Session> oDataQueryOptions)
         {
-            return oDataQueryOptions.ApplyTo(_dbSet.Include(s => s.Reservations).Include(s => s.Event).Include(s => s.Master).Include(s => s.Game));
+            return oDataQueryOptions.ApplyTo(_dbSet.Where(set => !set.IsDeleted));
+        }
+
+        public IQueryable<Session> GetUpcomingSessions()
+        {
+            return _dbSet.Where(s => !s.IsDeleted && !s.Event.IsDeleted).Include(s=>s.Master).Include(s=>s.Event).OrderBy(s => s.StartDate).Take(10)
+                ?? throw new Exception("no sessions found");
         }
     }
 }
