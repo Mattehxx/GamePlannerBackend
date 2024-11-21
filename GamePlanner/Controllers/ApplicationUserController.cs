@@ -24,7 +24,7 @@ namespace GamePlanner.Controllers
         private readonly IBlobService _blobService = blobService;
 
         #region CRUD
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize]
         [HttpGet]
         public IActionResult Get(ODataQueryOptions<ApplicationUser> options)
         {

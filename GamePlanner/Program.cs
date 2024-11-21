@@ -58,10 +58,7 @@ builder.Services.AddDbContext<GamePlannerDbContext>(options =>
     options.UseSqlServer(KeyVaultHelper.GetSecrectConnectionString("DbConnection")));
 
 builder.Services
-    .AddIdentity<ApplicationUser, IdentityRole>(options =>
-    {
-        options.SignIn.RequireConfirmedEmail = true;
-    })
+    .AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<GamePlannerDbContext>()
     .AddDefaultTokenProviders();
 

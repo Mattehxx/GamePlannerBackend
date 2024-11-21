@@ -135,7 +135,6 @@ namespace GamePlanner.Controllers
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
         
-        [Authorize(Roles = UserRoles.User)]
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
         {
