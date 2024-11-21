@@ -83,14 +83,9 @@ namespace GamePlanner.Controllers
         #endregion
 
         #region CUSTOM
-        /// <summary>
-        /// DA RIFARE CON MODELLI
-        /// </summary>
-        /// <returns></returns>
-        //[NonAction]
 
-        [HttpGet, Route("upcoming")]
-        public async Task<IActionResult> GetUpcomingSessions()  //da rifare con mapper e dto
+        [HttpGet("upcoming")]
+        public async Task<IActionResult> GetUpcomingSessions()
         {
             try
             {
@@ -134,6 +129,7 @@ namespace GamePlanner.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
         #endregion
     }
 }

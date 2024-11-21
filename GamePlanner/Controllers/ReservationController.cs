@@ -39,7 +39,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ReservationInputDTO model)
         {
@@ -144,7 +144,7 @@ namespace GamePlanner.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.User)]
+        [Authorize]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] JsonPatchDocument<Reservation> jsonPatch)
         {
