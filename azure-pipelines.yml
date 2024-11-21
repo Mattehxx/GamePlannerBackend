@@ -22,6 +22,12 @@ steps:
       $(Build.BuildId)
       latest
 
+- task: AzureAppServiceManage@0
+  inputs:
+    azureSubscription: 'Azure for Students(7f058c8f-170a-4d9c-be4e-71c38d773df3)'
+    Action: 'Restart Azure App Service'
+    WebAppName: 'GamePlannerBackend'
+
 - script: |
     echo Add other task to build, test, and deploy your project.
   displayName: 'Run a multi line script'
