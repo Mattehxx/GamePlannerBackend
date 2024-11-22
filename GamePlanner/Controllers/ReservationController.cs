@@ -43,11 +43,12 @@ namespace GamePlanner.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ReservationInputDTO model)
         {
+            Reservation? entity = null;
             try
             {
                 ArgumentNullException.ThrowIfNull(model);
 
-                Reservation entity = await _unitOfWork.ReservationManager.CreateAsync(_mapper.ToEntity(model));
+                entity = await _unitOfWork.ReservationManager.CreateAsync(_mapper.ToEntity(model));
 
                 if (!await CanBeConfirmedAsync(entity))
                 {
@@ -66,7 +67,11 @@ namespace GamePlanner.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message   =  ex.Message });
+                if (entity is not null)
+                {
+                    await _unitOfWork.ReservationManager.DeleteAsync(entity.ReservationId);
+                }
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -193,22 +198,28 @@ namespace GamePlanner.Controllers
         [HttpPost("new-confirm-email")]
         public async Task<IActionResult> SendNewConfirmationEmail(int sessionId, string userId)
         {
+            Reservation? reservation = null;
             try
             {
                 ArgumentNullException.ThrowIfNull(sessionId);
                 ArgumentNullException.ThrowIfNull(userId);
 
-                Reservation reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
+                reservation = await _unitOfWork.ReservationManager.GetBySessionAndUser(sessionId, userId);
                 if (!reservation.IsNotified) return BadRequest("Reservation not alredy notified");
 
                 if (!await SendConfirmationEmailAsync(reservation))
                 {
+                    await _unitOfWork.ReservationManager.DeleteAsync(reservation.ReservationId);
                     return BadRequest("Cannot send confirmation email");
                 }
                 return Ok();
             }
             catch (Exception ex)
             {
+                if (reservation is not null)
+                {
+                    await _unitOfWork.ReservationManager.DeleteAsync(reservation.ReservationId);
+                }
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -225,7 +236,7 @@ namespace GamePlanner.Controllers
 
             await _emailService.SendConfirmationEmailAsync(user.Email, user.Name, entity.SessionId, user.Id, entity.Token);
 
-            await _unitOfWork.ReservationManager.ConfirmNotificationAsync(entity);
+            await _unitOfWork.ReservationManager.ToggleNotificationAsync(entity, true);
 
             return true;
         }

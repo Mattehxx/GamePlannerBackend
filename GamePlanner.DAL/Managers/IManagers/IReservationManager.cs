@@ -6,7 +6,7 @@ namespace GamePlanner.DAL.Managers.IManagers
     {
         public Task<Reservation> GetBySessionAndUser(int sessionId, string userId);
         public Task<Reservation> ConfirmAsync(Reservation entity, string token);
-        public Task<Reservation> ConfirmNotificationAsync(Reservation entity);
+        public Task<Reservation> ToggleNotificationAsync(Reservation entity, bool isNotified);
         public Task<IEnumerable<Reservation>> GetConfirmedAsync(int sessionId);
         public Task<Reservation?> GetFirstQueuedAsync(int sessionId);
     }
