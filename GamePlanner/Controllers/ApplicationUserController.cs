@@ -150,15 +150,11 @@ namespace GamePlanner.Controllers
         }
 
         [HttpGet("download-apk")]
-        public async Task<IActionResult> DownloadApk()
+        public IActionResult DownloadApk()
         {
             try
             {
-                using (var client = new System.Net.Http.HttpClient())
-                {
-                    var fileBytes = await client.GetByteArrayAsync("https://github.com/GabryTm047/download-APK-PW1-2anno-_ITS/raw/refs/heads/main/GamePlanner.apk");
-                    return File(fileBytes, "application/vnd.android.package-archive", "GamePlanner.apk");
-                }
+                return Ok("https://github.com/GabryTm047/download-APK-PW1-2anno-_ITS/raw/refs/heads/main/GamePlanner.apk");
             }
             catch (Exception ex)
             {
