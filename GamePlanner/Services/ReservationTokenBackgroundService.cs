@@ -44,7 +44,7 @@ namespace GamePlanner.Services
                     Console.WriteLine($"Reservation token background service error: {ex}");
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(30), cancellationToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
             }
         }
     }
