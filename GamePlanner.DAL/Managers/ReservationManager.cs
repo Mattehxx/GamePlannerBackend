@@ -64,9 +64,8 @@ namespace GamePlanner.DAL.Managers
         public async Task<Reservation> ToggleNotificationAsync(Reservation entity, bool isNotified)
         {
             entity.IsNotified = isNotified;
-            return await _context.SaveChangesAsync() > 0
-                ? entity
-                : throw new InvalidOperationException("Failed to confirm notification");
+            await _context.SaveChangesAsync();
+            return entity;
         }
 
         public async Task<IEnumerable<Reservation>> GetConfirmedAsync(int sessionId)
