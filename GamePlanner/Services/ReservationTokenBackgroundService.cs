@@ -16,7 +16,7 @@ namespace GamePlanner.Services
                     var dbContext = scope.ServiceProvider.GetRequiredService<GamePlannerDbContext>();
 
                     var sessions = await dbContext.Sessions
-                        .Where(s => s.StartDate > DateTime.Now && !s.IsDeleted)
+                        .Where(s => s.StartDate > DateTime.UtcNow && !s.IsDeleted)
                         .ToListAsync(cancellationToken);
 
                     foreach (var session in sessions) 
@@ -27,10 +27,10 @@ namespace GamePlanner.Services
 
                         foreach (var reservation in reservations)
                         {
-                            if (reservation.TokenCreateDate < DateTime.Now.AddMinutes(-30))
+                            if (reservation.TokenCreateDate < DateTime.UtcNow.AddMinutes(-30))
                             {
                                 reservation.Token = Guid.NewGuid().ToString();
-                                reservation.TokenCreateDate = DateTime.Now;
+                                reservation.TokenCreateDate = DateTime.UtcNow;
 
                                 dbContext.Reservations.Update(reservation);
                             }
